@@ -21,9 +21,7 @@ export default function RegistrationModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="w-full">Register Now</Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button className="w-full">Register Now</Button>} />
       <DialogContent className="sm:max-w-[800px] w-[90vw] h-[80vh] flex flex-col p-0">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Register: {eventTitle}</DialogTitle>
