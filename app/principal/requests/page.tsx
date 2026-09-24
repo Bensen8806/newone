@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import PrincipalActionButtons from '@/components/PrincipalActionButtons'
 
 export default async function PrincipalRequests() {
   const supabase = createClient()
@@ -28,10 +29,7 @@ export default async function PrincipalRequests() {
                 <p className="text-sm">Venue: {(event.venues as { name: string })?.name}</p>
                 <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString()}</p>
               </div>
-              <div className="flex gap-2">
-                <button className="px-4 py-2 bg-destructive text-destructive-foreground rounded-md">Reject</button>
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md">Approve</button>
-              </div>
+              <PrincipalActionButtons eventId={event.id} />
             </div>
           ))}
         </div>

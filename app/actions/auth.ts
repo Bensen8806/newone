@@ -42,14 +42,15 @@ export async function signup(formData: FormData) {
     return { error: 'Students must use an @nssce.ac.in email address.' }
   }
 
-  const supabase = createClient()
-  const { error } = await supabase.auth.signUp({
+  const adminClient = createAdminClient()
+  
+  // Use admin client to create user with email_confirm: true to bypass email verification
+  const { data: authData, error } = await adminClient.auth.admin.createUser({
     email,
     password,
-    options: {
-      data: {
-        name,
-      }
+    email_confirm: true,
+    user_metadata: {
+      name,
     }
   })
 
@@ -57,10 +58,20 @@ export async function signup(formData: FormData) {
     return { error: error.message }
   }
 
+  // After creating, sign the user in using the regular client to set cookies
+  const supabase = createClient()
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (signInError) {
+    return { error: signInError.message }
+  }
+
   if (requestedRole && requestedRole !== 'STUDENT') {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      const adminClient = createAdminClient()
       await adminClient
         .from('users')
         .update({ requested_role: requestedRole })

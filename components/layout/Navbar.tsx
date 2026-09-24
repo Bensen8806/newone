@@ -21,12 +21,14 @@ export default async function Navbar() {
   const isPrincipal = roles.includes('PRINCIPAL')
   const isHod = roles.includes('HOD')
   const isClubHead = roles.includes('CLUB_HEAD')
+  const isFacultyAdvisor = roles.includes('FACULTY_ADVISOR')
 
   let dashboardLink = '/student/dashboard'
   if (isAdmin) dashboardLink = '/admin/dashboard'
   else if (isPrincipal) dashboardLink = '/principal/dashboard'
   else if (isHod) dashboardLink = '/hod/dashboard'
   else if (isClubHead) dashboardLink = '/club/dashboard'
+  else if (isFacultyAdvisor) dashboardLink = '/faculty-advisor/dashboard'
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
@@ -40,7 +42,7 @@ export default async function Navbar() {
               <Link href="/events" className={buttonVariants({ variant: "ghost" })}>
                 Main Feed
               </Link>
-              {(isAdmin || isPrincipal || isHod || isClubHead) && (
+              {(isAdmin || isPrincipal || isHod || isClubHead || isFacultyAdvisor) && (
                 <Link href="/map" className={buttonVariants({ variant: "ghost" })}>
                   Campus Map
                 </Link>

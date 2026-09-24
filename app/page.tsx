@@ -18,7 +18,15 @@ export default async function Home() {
     roles = data?.role || ['STUDENT']
   }
 
-  const isAuthorizedForMap = roles.includes('CLUB_HEAD') || roles.includes('HOD') || roles.includes('PRINCIPAL') || roles.includes('ADMIN')
+  const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
+
+  // Fetch event posts (Flushed 2 days after event date)
+  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  const { data: posts } = await supabase
+    .from('event_posts')
+    .select('*, events!inner(title, start_time, description, venues(name))')
+    .gte('events.start_time', twoDaysAgo)
+    .order('created_at', { ascending: false })
 
   let dashboardLink = '/login'
   if (user) {
@@ -26,6 +34,7 @@ export default async function Home() {
     else if (roles.includes('PRINCIPAL')) dashboardLink = '/principal/dashboard'
     else if (roles.includes('HOD')) dashboardLink = '/hod/dashboard'
     else if (roles.includes('CLUB_HEAD')) dashboardLink = '/club/dashboard'
+    else if (roles.includes('FACULTY_ADVISOR')) dashboardLink = '/faculty-advisor/dashboard'
     else dashboardLink = '/student/dashboard'
   }
 
@@ -152,6 +161,43 @@ export default async function Home() {
             </CardHeader>
           </Card>
         </div>
+      </section>
+      {/* Event Feed Section */}
+      <section className="container mx-auto px-4 max-w-4xl mt-16 z-10 relative bg-background/80 p-8 rounded-xl backdrop-blur-sm">
+        <div className="mb-10 text-center">
+          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">Campus Life</div>
+          <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Latest Events</h2>
+        </div>
+        
+        {posts && posts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-12">
+            {posts.map((post) => (
+              <div key={post.id} className="bg-card rounded-xl overflow-hidden shadow-lg border">
+                <div className="p-4 flex items-center justify-between border-b bg-muted/30">
+                  <div className="font-semibold">{post.events?.title}</div>
+                  <div className="text-xs text-muted-foreground">{new Date(post.created_at!).toLocaleDateString()}</div>
+                </div>
+                <div className="w-full h-[500px] relative overflow-hidden bg-black flex items-center justify-center">
+                  <img src={post.poster_url} alt={post.events?.title} className="max-w-full max-h-full object-contain" />
+                </div>
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex gap-4 text-sm">
+                    <p><strong>Date:</strong> {new Date(post.events?.start_time!).toLocaleString()}</p>
+                    <p><strong>Venue:</strong> {post.events?.venues?.name}</p>
+                  </div>
+                  {post.events?.description && (
+                    <p className="text-sm text-muted-foreground mt-2">{post.events.description}</p>
+                  )}
+                  <div className="mt-4">
+                    <Button className="w-full">Register Now</Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground">No recent events to show.</p>
+        )}
       </section>
     </div>
   )

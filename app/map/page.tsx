@@ -59,9 +59,15 @@ export default function MapPage() {
     if (overlappingEvents) {
       overlappingEvents.forEach((event: { venue_id: string | null; status: string | null }) => {
         if (!event.venue_id) return
-        if (event.status === 'PENDING_HOD' || event.status === 'PENDING_PRINCIPAL') {
-          newAvail[event.venue_id] = 'PENDING'
-        } else {
+        
+        const pendingStatuses = ['PENDING_FACULTY_REVIEW', 'PENDING_HOD', 'PENDING_PRINCIPAL', 'PRINCIPAL_MEET_REQUESTED']
+        
+        if (event.status && pendingStatuses.includes(event.status)) {
+          // If already booked, don't overwrite with pending (booked takes precedence for overlapping events if multiple exist)
+          if (newAvail[event.venue_id] !== 'BOOKED') {
+            newAvail[event.venue_id] = 'PENDING'
+          }
+        } else if (event.status === 'APPROVED') {
           newAvail[event.venue_id] = 'BOOKED'
         }
       })

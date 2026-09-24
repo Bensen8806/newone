@@ -53,6 +53,7 @@ export async function updateSession(request: NextRequest) {
     else if (roles.includes('PRINCIPAL')) url.pathname = '/principal/dashboard'
     else if (roles.includes('HOD')) url.pathname = '/hod/dashboard'
     else if (roles.includes('CLUB_HEAD')) url.pathname = '/club/dashboard'
+    else if (roles.includes('FACULTY_ADVISOR')) url.pathname = '/faculty-advisor/dashboard'
     else url.pathname = '/student/dashboard'
 
     const redirectResponse = NextResponse.redirect(url)

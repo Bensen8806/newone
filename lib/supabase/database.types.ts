@@ -93,24 +93,34 @@ export type Database = {
       }
       clubs: {
         Row: {
+          faculty_advisor_id: string | null
           head_user_id: string | null
           id: string
           name: string | null
           type: string | null
         }
         Insert: {
+          faculty_advisor_id?: string | null
           head_user_id?: string | null
           id?: string
           name?: string | null
           type?: string | null
         }
         Update: {
+          faculty_advisor_id?: string | null
           head_user_id?: string | null
           id?: string
           name?: string | null
           type?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "clubs_faculty_advisor_id_fkey"
+            columns: ["faculty_advisor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "clubs_head_user_id_fkey"
             columns: ["head_user_id"]
@@ -149,6 +159,35 @@ export type Database = {
           },
         ]
       }
+      event_posts: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          id: string
+          poster_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          poster_url: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          poster_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_posts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           category: string | null
@@ -160,6 +199,8 @@ export type Database = {
           expected_attendance: number | null
           id: string
           ktu_activity_points_category: string | null
+          principal_meeting_reason: string | null
+          principal_meeting_time: string | null
           special_requirements: string | null
           start_time: string
           status: string | null
@@ -177,6 +218,8 @@ export type Database = {
           expected_attendance?: number | null
           id?: string
           ktu_activity_points_category?: string | null
+          principal_meeting_reason?: string | null
+          principal_meeting_time?: string | null
           special_requirements?: string | null
           start_time: string
           status?: string | null
@@ -194,6 +237,8 @@ export type Database = {
           expected_attendance?: number | null
           id?: string
           ktu_activity_points_category?: string | null
+          principal_meeting_reason?: string | null
+          principal_meeting_time?: string | null
           special_requirements?: string | null
           start_time?: string
           status?: string | null

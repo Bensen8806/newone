@@ -16,8 +16,8 @@ export default async function MapLayout({
   const { data } = await supabase.from('users').select('*').eq('id', user.id).single()
   const roles: string[] = data?.role || ['STUDENT']
 
-  // If the user is ONLY a STUDENT (i.e. does not have any of the required roles), redirect them.
-  const isAuthorized = roles.includes('CLUB_HEAD') || roles.includes('HOD') || roles.includes('PRINCIPAL') || roles.includes('ADMIN')
+  // Authorize all users except those whose only role is STUDENT
+  const isAuthorized = roles.some(role => role !== 'STUDENT')
 
   if (!isAuthorized) {
     redirect('/student/dashboard')
