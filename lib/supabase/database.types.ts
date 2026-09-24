@@ -93,6 +93,7 @@ export type Database = {
       }
       clubs: {
         Row: {
+          department_id: string | null
           faculty_advisor_id: string | null
           head_user_id: string | null
           id: string
@@ -100,6 +101,7 @@ export type Database = {
           type: string | null
         }
         Insert: {
+          department_id?: string | null
           faculty_advisor_id?: string | null
           head_user_id?: string | null
           id?: string
@@ -107,6 +109,7 @@ export type Database = {
           type?: string | null
         }
         Update: {
+          department_id?: string | null
           faculty_advisor_id?: string | null
           head_user_id?: string | null
           id?: string
@@ -114,6 +117,13 @@ export type Database = {
           type?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "clubs_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "clubs_faculty_advisor_id_fkey"
             columns: ["faculty_advisor_id"]
@@ -165,18 +175,21 @@ export type Database = {
           event_id: string | null
           id: string
           poster_url: string
+          registration_url: string | null
         }
         Insert: {
           created_at?: string | null
           event_id?: string | null
           id?: string
           poster_url: string
+          registration_url?: string | null
         }
         Update: {
           created_at?: string | null
           event_id?: string | null
           id?: string
           poster_url?: string
+          registration_url?: string | null
         }
         Relationships: [
           {

@@ -88,6 +88,7 @@ export default async function PrincipalDashboard() {
             </BorderGlow>
           </div>
         </div>
+      </div>
     </div>
   )
 }

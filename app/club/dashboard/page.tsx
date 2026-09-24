@@ -7,6 +7,7 @@ import CreatePostButton from '@/components/CreatePostButton'
 import GradientWaves from '@/components/ui/GradientWaves'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
+import ClubEditForm from '@/components/ClubEditForm'
 
 export default async function ClubDashboard() {
   const supabase = createClient()
@@ -19,6 +20,8 @@ export default async function ClubDashboard() {
   const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
   const { data: club } = await supabase.from('clubs').select('*').eq('head_user_id', user.id).single()
   const { data: events } = await supabase.from('events').select('*, venues(name)').eq('club_head_id', user.id).order('created_at', { ascending: false })
+  const { data: facultyAdvisors } = await supabase.from('users').select('*').contains('role', ['FACULTY_ADVISOR'])
+  const { data: departments } = await supabase.from('departments').select('*')
 
   const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
 
@@ -68,6 +71,12 @@ export default async function ClubDashboard() {
                   <p className="text-muted-foreground italic">No club assigned yet.</p>
                 )}
               </div>
+              <ClubEditForm 
+                club={club} 
+                profile={profile} 
+                facultyAdvisors={facultyAdvisors || []} 
+                departments={departments || []} 
+              />
             </BorderGlow>
           </div>
 
@@ -102,7 +111,7 @@ export default async function ClubDashboard() {
               ) : (
                 <div className="flex-grow flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-white/10 dark:border-white/5 rounded-xl bg-white/5 dark:bg-black/10">
                   <h3 className="text-lg font-semibold mb-2">No events found</h3>
-                  <p className="text-muted-foreground max-w-sm">You haven't requested any events yet.</p>
+                  <p className="text-muted-foreground max-w-sm">You haven&apos;t requested any events yet.</p>
                 </div>
               )}
             </BorderGlow>
