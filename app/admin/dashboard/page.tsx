@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { approveRoleRequest, rejectRoleRequest } from '@/app/actions/admin'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import CreatePostButton from '@/components/CreatePostButton'
 import GradientWaves from '@/components/ui/GradientWaves'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
+import Link from 'next/link'
+import CreatePostButton from '@/components/CreatePostButton'
 
 export default async function AdminDashboard() {
   const supabase = createClient()
@@ -50,9 +50,9 @@ export default async function AdminDashboard() {
             <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Admin Dashboard" typingSpeed={50} loop={false} />
             <p className="text-muted-foreground mt-2 text-lg">Manage platform users and role requests.</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-3 flex-wrap">
             <Link href="/map">
-              <Button variant="outline" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-background/50 backdrop-blur border-foreground/10">Book Venue</Button>
+              <Button className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">Book Venue</Button>
             </Link>
             <form action={logout}>
               <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>

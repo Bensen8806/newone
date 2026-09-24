@@ -24,13 +24,14 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-      // Fetch approved events that haven't ended yet
+  // Only show active/future events on the landing page
+  // Use OR to gracefully handle data-entry errors where end_time was accidentally set before start_time
   const { data: events } = await supabase
     .from('events')
     .select('*, venues(name), event_posts(poster_url, registration_url)')
     .eq('status', 'APPROVED')
-    .gte('end_time', new Date().toISOString())
-    .order('start_time', { ascending: true })
+    .or(`end_time.gte.${new Date().toISOString()},start_time.gte.${new Date().toISOString()}`)
+    .order('start_time', { ascending: false })
 
   let dashboardLink = '/login'
   if (user) {

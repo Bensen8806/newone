@@ -24,8 +24,11 @@ export default function MapPage() {
   const [isChecked, setIsChecked] = useState(false)
 
   // Reset checked state when time inputs change
-  const handleDateChange = (setter: React.Dispatch<React.SetStateAction<Date>>) => (date: Date) => {
+  const handleDateChange = (setter: React.Dispatch<React.SetStateAction<Date>>, isStart: boolean = false) => (date: Date) => {
     setter(date)
+    if (isStart && date > endDate) {
+      setEndDate(date)
+    }
     setIsChecked(false)
   }
 
@@ -114,7 +117,7 @@ export default function MapPage() {
       {/* Sidebar */}
       <MapSidebar 
         startDate={startDate}
-        setStartDate={handleDateChange(setStartDate)}
+        setStartDate={handleDateChange(setStartDate, true)}
         endDate={endDate}
         setEndDate={handleDateChange(setEndDate)}
         startTime={startTime}
