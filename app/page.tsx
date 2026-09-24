@@ -5,6 +5,7 @@ import { Map, Users, Server, User, UserCheck, MapPin } from 'lucide-react'
 import GradientWaves from '@/components/ui/GradientWaves'
 import BorderGlow from '@/components/ui/BorderGlow'
 import ScrollVideo from '@/components/ui/ScrollVideo'
+import RegistrationModal from '@/components/RegistrationModal'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -21,13 +22,12 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-  // Fetch approved events (Flushed 2 days after event date)
-  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+      // Fetch approved events that haven't ended yet
   const { data: events } = await supabase
     .from('events')
-    .select('*, venues(name), event_posts(poster_url)')
+    .select('*, venues(name), event_posts(poster_url, registration_url)')
     .eq('status', 'APPROVED')
-    .gte('start_time', twoDaysAgo)
+    .gte('end_time', new Date().toISOString())
     .order('start_time', { ascending: true })
 
   let dashboardLink = '/login'
@@ -41,7 +41,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="relative flex flex-col gap-32 pt-24 pb-[150vh] min-h-[300vh]">
+    <div className="relative flex flex-col gap-32 pt-24 pb-24 min-h-screen">
       <ScrollVideo />
       
       {/* Background Effect */}
@@ -175,6 +175,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 gap-12">
             {events.map((event: any) => {
               const posterUrl = event.event_posts?.[0]?.poster_url;
+              const registrationUrl = event.event_posts?.[0]?.registration_url;
               return (
                 <BorderGlow key={event.id} className="bg-card rounded-xl overflow-hidden shadow-lg border" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
                   <div className="p-4 flex items-center justify-between border-b bg-muted/30">
@@ -201,7 +202,11 @@ export default async function Home() {
                       <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
                     )}
                     <div className="mt-4">
-                      <Button className="w-full">Register Now</Button>
+                      {registrationUrl ? (
+                        <RegistrationModal registrationUrl={registrationUrl} eventTitle={event.title} />
+                      ) : (
+                        <Button className="w-full" disabled>Registration Not Available</Button>
+                      )}
                     </div>
                   </div>
                 </BorderGlow>

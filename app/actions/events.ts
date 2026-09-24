@@ -30,6 +30,15 @@ export async function submitEventRequest(data: {
     .eq('head_user_id', user.id)
     .single()
 
+  const { data: userRecord } = await adminClient
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isAdmin = userRecord?.role?.includes('ADMIN') || false
+  const status = isAdmin ? 'APPROVED' : 'PENDING_FACULTY_REVIEW'
+
   const { error } = await adminClient.from('events').insert({
     title: data.title,
     description: data.description,
@@ -41,7 +50,7 @@ export async function submitEventRequest(data: {
     expected_attendance: data.expectedAttendance || 0,
     category: data.category || 'TECHNICAL',
     ktu_activity_points_category: data.ktuPoints ? 'YES' : null,
-    status: 'PENDING_FACULTY_REVIEW',
+    status: status,
     special_requirements: data.specialRequirements || ''
   })
 
@@ -113,14 +122,15 @@ export async function processEventAction(
   return { success: true }
 }
 
-export async function createEventPost(eventId: string, posterUrl: string) {
+export async function createEventPost(eventId: string, posterUrl: string, registrationUrl?: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
   const { error } = await supabase.from('event_posts').insert({
     event_id: eventId,
-    poster_url: posterUrl
+    poster_url: posterUrl,
+    registration_url: registrationUrl || null
   })
 
   if (error) return { error: error.message }

@@ -14,6 +14,7 @@ export default function MapPage() {
   const [availability, setAvailability] = useState<AvailabilityState>({})
   const [selectedVenue, setSelectedVenue] = useState<VenueWithDept | null>(null)
   const [isChecking, setIsChecking] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   
   // Sidebar state
   const [startDate, setStartDate] = useState<Date>(new Date())
@@ -22,22 +23,45 @@ export default function MapPage() {
   const [endTime, setEndTime] = useState('17:00')
   const [isChecked, setIsChecked] = useState(false)
 
+  // Reset checked state when time inputs change
+  const handleDateChange = (setter: React.Dispatch<React.SetStateAction<Date>>) => (date: Date) => {
+    setter(date)
+    setIsChecked(false)
+  }
+
+  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (time: string) => {
+    setter(time)
+    setIsChecked(false)
+  }
+
   useEffect(() => {
-    async function loadVenues() {
+    async function loadInitialData() {
       const supabase = createClient()
-      const { data } = await supabase.from('venues').select('*, departments(name, hod_user_id)')
-      if (data) setVenues(data as VenueWithDept[])
+      const [{ data: venuesData }, { data: { user } }] = await Promise.all([
+        supabase.from('venues').select('*, departments(name, hod_user_id)'),
+        supabase.auth.getUser()
+      ])
+      
+      if (venuesData) setVenues(venuesData as VenueWithDept[])
+
+      if (user) {
+        const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+        if (userData?.role?.includes('ADMIN')) {
+          setIsAdmin(true)
+        }
+      }
     }
-    loadVenues()
+    loadInitialData()
   }, [])
 
   const handleCheckAvailability = async () => {
     if (!startDate || !endDate || !startTime || !endTime) return
     setIsChecking(true)
     
-    // Create ISO strings
-    const startStr = startDate.toISOString().split('T')[0]
-    const endStr = endDate.toISOString().split('T')[0]
+    // Create ISO strings safely avoiding timezone shifting bugs
+    const { format } = await import('date-fns')
+    const startStr = format(startDate, 'yyyy-MM-dd')
+    const endStr = format(endDate, 'yyyy-MM-dd')
     const startIso = new Date(`${startStr}T${startTime}:00`).toISOString()
     const endIso = new Date(`${endStr}T${endTime}:00`).toISOString()
 
@@ -90,13 +114,13 @@ export default function MapPage() {
       {/* Sidebar */}
       <MapSidebar 
         startDate={startDate}
-        setStartDate={setStartDate}
+        setStartDate={handleDateChange(setStartDate)}
         endDate={endDate}
-        setEndDate={setEndDate}
+        setEndDate={handleDateChange(setEndDate)}
         startTime={startTime}
-        setStartTime={setStartTime}
+        setStartTime={handleTimeChange(setStartTime)}
         endTime={endTime}
-        setEndTime={setEndTime}
+        setEndTime={handleTimeChange(setEndTime)}
         onCheck={handleCheckAvailability}
         isChecking={isChecking}
         hasChecked={isChecked}
@@ -129,6 +153,7 @@ export default function MapPage() {
         startTime={startTime}
         endTime={endTime}
         onBookingSuccess={handleCheckAvailability}
+        isAdmin={isAdmin}
       />
     </div>
   )

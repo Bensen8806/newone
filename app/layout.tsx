@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Separator } from "@/components/ui/separator"
 import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const poppins = Poppins({
@@ -33,17 +34,7 @@ export default function RootLayout({
           
           <main className="flex-1">{children}</main>
           
-          <footer className="py-6 md:py-0">
-            <Separator />
-            <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row px-4">
-              <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-                Built for NSS College of Engineering, Palakkad.
-              </p>
-              <p className="text-center text-sm font-medium italic text-muted-foreground">
-                &quot;Uddhared atmanAtmanam&quot;
-              </p>
-            </div>
-          </footer>
+          <Footer />
         </div>
         </TooltipProvider>
       </body>
