@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
-import Dock, { DockItemData } from '@/components/ui/Dock'
+import JellyRadio from '@/components/ui/JellyRadio'
 import { Home, LayoutDashboard, Phone, Mail } from 'lucide-react'
 
 interface QuickLink {
@@ -25,30 +25,26 @@ const QUICK_LINKS: QuickLink[] = [
 export default function Footer() {
   const router = useRouter()
 
-  const dockItems: DockItemData[] = [
+  const radioItems = [
     {
+      value: '/',
       label: 'Home',
-      icon: <Home className="w-5 h-5 text-red-400 group-hover:text-red-300 transition-colors" />,
-      onClick: () => router.push('/')
+      icon: <Home className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
     },
     {
+      value: '/login',
       label: 'Dashboard',
-      icon: <LayoutDashboard className="w-5 h-5 text-red-400 group-hover:text-red-300 transition-colors" />,
-      onClick: () => router.push('/login')
+      icon: <LayoutDashboard className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
     },
     {
+      value: 'contact',
       label: 'Contact',
-      icon: <Phone className="w-5 h-5 text-red-400 group-hover:text-red-300 transition-colors" />,
-      onClick: () => {
-        window.location.href = 'mailto:eventsnssce@gmail.com?subject=Inquiry%20-%20NSSCE%20Event%20System'
-      }
+      icon: <Phone className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
     },
     {
+      value: 'email',
       label: 'Email Us',
-      icon: <Mail className="w-5 h-5 text-red-400 group-hover:text-red-300 transition-colors" />,
-      onClick: () => {
-        window.location.href = 'mailto:eventsnssce@gmail.com'
-      }
+      icon: <Mail className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
     }
   ]
 
@@ -61,12 +57,18 @@ export default function Footer() {
           <span className="text-[11px] font-bold uppercase tracking-widest text-red-500">
             Quick Navigation
           </span>
-          <Dock
-            items={dockItems}
-            panelHeight={62}
-            baseItemSize={44}
-            magnification={62}
-            distance={150}
+          <JellyRadio
+            items={radioItems}
+            defaultValue="/"
+            onChange={(val) => {
+              if (val === 'contact') {
+                window.location.href = 'mailto:eventsnssce@gmail.com?subject=Inquiry%20-%20NSSCE%20Event%20System'
+              } else if (val === 'email') {
+                window.location.href = 'mailto:eventsnssce@gmail.com'
+              } else {
+                router.push(val)
+              }
+            }}
           />
         </div>
 

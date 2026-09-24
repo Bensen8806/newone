@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Map, Users, Server, User, UserCheck, MapPin } from 'lucide-react'
 import GradientWaves from '@/components/ui/GradientWaves'
 import BorderGlow from '@/components/ui/BorderGlow'
 import ScrollVideo from '@/components/ui/ScrollVideo'
+import AccordionGallery from '@/components/ui/AccordionGallery'
 import RegistrationModal from '@/components/RegistrationModal'
 
 import { createClient } from '@/lib/supabase/server'
@@ -70,13 +72,13 @@ export default async function Home() {
         />
       </div>
       {/* Hero Section */}
-      <section className="container mx-auto px-4 text-center">
-        <h1 className="font-poppins text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-          Campus Event & <span className="text-primary">Venue Booking</span> System
+      <section className="container mx-auto px-4 flex flex-col items-center text-center z-10 relative">
+        <div className="mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:scale-[1.02] transition-all duration-500">
+          <Image src="/disha-transparent.png" alt="Disha Logo" width={380} height={150} quality={100} className="object-contain" priority />
+        </div>
+        <h1 className="font-poppins text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl drop-shadow-md">
+          NSSCE Event & <span className="text-primary">Venue Booking</span> System
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          A structured, role-based system for submitting venue requests, tracking approvals, and publishing campus events — replacing paper-based processes entirely at NSS College of Engineering.
-        </p>
         <div className="mt-10 flex justify-center gap-4">
           <Link href={dashboardLink}>
             <Button size="lg" className="font-semibold">
@@ -93,8 +95,33 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Event Feed Section */}
+      <section className="container mx-auto px-4 max-w-5xl z-10 relative">
+        <div className="mb-12 text-center">
+          <h2 className="font-poppins text-4xl font-bold tracking-tight mb-4 drop-shadow-md">Latest Events</h2>
+        </div>
+        
+        {events && events.length > 0 ? (
+          <div className="w-full">
+            <AccordionGallery 
+              items={events.map((event: any) => ({
+                image: event.event_posts?.[0]?.poster_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
+                label: event.title,
+                subtitle: `${new Date(event.start_time).toLocaleDateString('en-GB')} • ${event.venues?.name || 'TBA'}`,
+                link: event.event_posts?.[0]?.registration_url || '#'
+              }))}
+              defaultIndex={0}
+              height={500}
+              expandRatio={0.6}
+            />
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground">No recent events to show.</p>
+        )}
+      </section>
+
       {/* Roles Section */}
-      <section className="container mx-auto px-4 max-w-7xl">
+      <section className="container mx-auto px-4 max-w-7xl mt-24">
         <div className="mb-10 max-w-3xl">
           <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-red-500 mb-3">Access Control</div>
           <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Role-based access</h2>
@@ -163,59 +190,6 @@ export default async function Home() {
             </CardHeader>
           </BorderGlow>
         </div>
-      </section>
-      {/* Event Feed Section */}
-      <section className="container mx-auto px-4 max-w-4xl mt-16 z-10 relative bg-background/80 p-8 rounded-xl backdrop-blur-sm">
-        <div className="mb-10 text-center">
-          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">Campus Life</div>
-          <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Latest Events</h2>
-        </div>
-        
-        {events && events.length > 0 ? (
-          <div className="grid grid-cols-1 gap-12">
-            {events.map((event: any) => {
-              const posterUrl = event.event_posts?.[0]?.poster_url;
-              const registrationUrl = event.event_posts?.[0]?.registration_url;
-              return (
-                <BorderGlow key={event.id} className="bg-card rounded-xl overflow-hidden shadow-lg border" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-                  <div className="p-4 flex items-center justify-between border-b bg-muted/30">
-                    <div className="font-semibold">{event.title}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(event.start_time).toLocaleDateString()}</div>
-                  </div>
-                  
-                  {posterUrl ? (
-                    <div className="w-full h-[500px] relative overflow-hidden bg-black flex items-center justify-center">
-                      <img src={posterUrl} alt={event.title} className="max-w-full max-h-full object-contain" />
-                    </div>
-                  ) : (
-                    <div className="w-full h-40 bg-muted flex items-center justify-center border-b">
-                      <span className="text-muted-foreground font-medium text-lg">{event.title}</span>
-                    </div>
-                  )}
-
-                  <div className="p-4 flex flex-col gap-2">
-                    <div className="flex gap-4 text-sm">
-                      <p><strong>Date:</strong> {new Date(event.start_time).toLocaleString()}</p>
-                      <p><strong>Venue:</strong> {event.venues?.name}</p>
-                    </div>
-                    {event.description && (
-                      <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
-                    )}
-                    <div className="mt-4">
-                      {registrationUrl ? (
-                        <RegistrationModal registrationUrl={registrationUrl} eventTitle={event.title} />
-                      ) : (
-                        <Button className="w-full" disabled>Registration Not Available</Button>
-                      )}
-                    </div>
-                  </div>
-                </BorderGlow>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="text-center text-muted-foreground">No recent events to show.</p>
-        )}
       </section>
     </div>
   )

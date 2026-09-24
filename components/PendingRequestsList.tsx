@@ -48,7 +48,7 @@ export default function PendingRequestsList({ events, role, roleCode }: PendingR
               <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
               <p className="text-sm text-muted-foreground">Club: {event.clubs?.name}</p>
               <p className="text-sm">Venue: {event.venues?.name}</p>
-              <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString()}</p>
+              <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString('en-GB')}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button 
