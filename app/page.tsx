@@ -22,41 +22,27 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-  // Only show active/future events on the landing page
-  // Use OR to gracefully handle data-entry errors where end_time was accidentally set before start_time
-  let events: any[] = []
-  try {
-    const { data } = await supabase
+  // Query approved events from Supabase
+  let { data: events, error } = await supabase
+    .from('events')
+    .select('*, venues(name), event_posts(poster_url, registration_url)')
+    .eq('status', 'APPROVED')
+    .order('start_time', { ascending: false })
+
+  // If no approved events returned, query all events in the database to ensure database records display
+  if (!events || events.length === 0) {
+    const { data: allEvents, error: allErr } = await supabase
       .from('events')
       .select('*, venues(name), event_posts(poster_url, registration_url)')
-      .eq('status', 'APPROVED')
-      .or(`end_time.gte.${new Date().toISOString()},start_time.gte.${new Date().toISOString()}`)
-      .order('start_time', { ascending: false })
-    if (data) events = data
-  } catch (err) {
-    events = []
+      .order('created_at', { ascending: false })
+    if (allEvents && allEvents.length > 0) {
+      events = allEvents
+    }
   }
 
-  const sampleEvents = [
-    {
-      id: 'sample-1',
-      title: 'HackNSS 2026 - Annual 24hr Campus Hackathon',
-      description: 'Join 200+ developers, designers, and innovators at NSSCE for 24 hours of building cutting-edge open-source software and hardware solutions.',
-      start_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      venues: { name: 'Auditorium' },
-      event_posts: [{ poster_url: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80', registration_url: 'https://nssce.ac.in' }]
-    },
-    {
-      id: 'sample-2',
-      title: 'ACM Technical Talk: AI & Quantum Computing',
-      description: 'An interactive session on emerging trends in AI agents, LLM architectures, and Quantum Algorithms hosted by ACM NSSCE Chapter.',
-      start_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-      venues: { name: 'CSE Seminar Hall' },
-      event_posts: [{ poster_url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', registration_url: 'https://nssce.ac.in' }]
-    }
-  ]
-
-  const displayEvents = events && events.length > 0 ? events : sampleEvents
+  if (error) {
+    console.log('Supabase events query error:', error)
+  }
 
   let dashboardLink = '/login'
   if (user) {
@@ -199,9 +185,9 @@ export default async function Home() {
           <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Latest Events</h2>
         </div>
         
-        {displayEvents && displayEvents.length > 0 ? (
+        {events && events.length > 0 ? (
           <div className="grid grid-cols-1 gap-12">
-            {displayEvents.map((event: any) => {
+            {events.map((event: any) => {
               const posterUrl = event.event_posts?.[0]?.poster_url;
               const registrationUrl = event.event_posts?.[0]?.registration_url;
               return (
