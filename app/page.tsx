@@ -4,6 +4,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Map, Users, Server, User, UserCheck, MapPin } from 'lucide-react'
 import GradientWaves from '@/components/ui/GradientWaves'
 import ScrollVideo from '@/components/ui/ScrollVideo'
+import RegistrationModal from '@/components/RegistrationModal'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -201,9 +202,7 @@ export default async function Home() {
                     )}
                     <div className="mt-4">
                       {registrationUrl ? (
-                        <Link href={registrationUrl} target="_blank">
-                          <Button className="w-full">Register Now</Button>
-                        </Link>
+                        <RegistrationModal registrationUrl={registrationUrl} eventTitle={event.title} />
                       ) : (
                         <Button className="w-full" disabled>Registration Not Available</Button>
                       )}
