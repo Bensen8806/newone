@@ -13,18 +13,28 @@ export async function login(formData: FormData) {
     return { error: 'Email and password are required' }
   }
 
-  const supabase = createClient()
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  try {
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-  if (error) {
-    return { error: error.message }
+    if (error) {
+      return { error: error.message }
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/')
+  } catch (err: any) {
+    if (err?.message === 'NEXT_REDIRECT' || err?.digest?.startsWith('NEXT_REDIRECT')) {
+      throw err
+    }
+    console.error('Login action error:', err)
+    return { 
+      error: 'Supabase connection error: Please update .env.local with valid Supabase URL and API keys.' 
+    }
   }
-
-  revalidatePath('/', 'layout')
-  redirect('/')
 }
 
 export async function signup(formData: FormData) {
@@ -42,49 +52,63 @@ export async function signup(formData: FormData) {
     return { error: 'Students must use an @nssce.ac.in email address.' }
   }
 
-  const adminClient = createAdminClient()
-  
-  // Use admin client to create user with email_confirm: true to bypass email verification
-  const { data: authData, error } = await adminClient.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: {
-      name,
+  try {
+    const adminClient = createAdminClient()
+    
+    // Use admin client to create user with email_confirm: true to bypass email verification
+    const { data: authData, error } = await adminClient.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        name,
+      }
+    })
+
+    if (error) {
+      return { error: error.message }
     }
-  })
 
-  if (error) {
-    return { error: error.message }
-  }
+    // After creating, sign the user in using the regular client to set cookies
+    const supabase = createClient()
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-  // After creating, sign the user in using the regular client to set cookies
-  const supabase = createClient()
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+    if (signInError) {
+      return { error: signInError.message }
+    }
 
-  if (signInError) {
-    return { error: signInError.message }
-  }
+    if (requestedRole && requestedRole !== 'STUDENT') {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await adminClient
+          .from('users')
+          .update({ requested_role: requestedRole })
+          .eq('id', user.id)
+      }
+    }
 
-  if (requestedRole && requestedRole !== 'STUDENT') {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      await adminClient
-        .from('users')
-        .update({ requested_role: requestedRole })
-        .eq('id', user.id)
+    revalidatePath('/', 'layout')
+    redirect('/')
+  } catch (err: any) {
+    if (err?.message === 'NEXT_REDIRECT' || err?.digest?.startsWith('NEXT_REDIRECT')) {
+      throw err
+    }
+    console.error('Signup action error:', err)
+    return { 
+      error: 'Supabase connection error: Please update .env.local with valid Supabase URL and API keys.' 
     }
   }
-
-  revalidatePath('/', 'layout')
-  redirect('/')
 }
 
 export async function logout() {
-  const supabase = createClient()
-  await supabase.auth.signOut()
+  try {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+  } catch (err) {
+    // Ignore signOut errors on logout
+  }
   redirect('/login')
 }
