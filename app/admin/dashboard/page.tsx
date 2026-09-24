@@ -30,13 +30,13 @@ export default async function AdminDashboard() {
     .select('id, name, email, requested_role')
     .not('requested_role', 'is', null)
 
-  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
-
   const { data: events } = await supabase
     .from('events')
     .select('*, venues(name)')
     .eq('club_head_id', user.id)
     .order('created_at', { ascending: false })
+
+  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
