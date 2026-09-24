@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
+import GradientWaves from '@/components/ui/GradientWaves'
+import Link from 'next/link'
 
 export default async function StudentDashboard() {
   const supabase = createClient()
@@ -17,23 +19,114 @@ export default async function StudentDashboard() {
     .eq('id', user.id)
     .single()
 
+  // For a premium look, define a reusable glass card class
+  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-xl rounded-2xl p-6"
+
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Student Dashboard</h1>
-        <form action={logout}>
-          <Button type="submit" variant="destructive">Log out</Button>
-        </form>
+    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
+      {/* Background Effect */}
+      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
+        <GradientWaves
+          horizonColor="#fbbf24"
+          waveColor="#fcd34d"
+          crestColor="#d97706"
+          speed={0.4}
+          amplitude={2.5}
+          waveScale={0.6}
+          waveRatio={0.9}
+          swell={35}
+          turbulence={20}
+          tilt={1.11}
+          zoom={1.0}
+          height={5.5}
+          fogDepth={15}
+          detail="medium"
+          brightness={1.0}
+          opacity={1.0}
+          mouseInteraction={true}
+          parallaxStrength={0.5}
+          grain={true}
+          grainIntensity={0.05}
+        />
       </div>
-      <div className="bg-card p-6 rounded-lg shadow-sm border mb-8">
-        <h2 className="text-xl font-semibold mb-4">Profile Info</h2>
-        <p><strong>Name:</strong> {profile?.name}</p>
-        <p><strong>Email:</strong> {profile?.email}</p>
-      </div>
-      
-      <h2 className="text-2xl font-bold mb-4">Participated Events</h2>
-      <div className="bg-card p-6 rounded-lg shadow-sm border">
-        <p className="text-muted-foreground">No events participated yet.</p>
+
+      <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+          <div>
+            <h1 className="text-4xl font-extrabold tracking-tight">Student Dashboard</h1>
+            <p className="text-muted-foreground mt-2 text-lg">Manage your profile and track your campus events.</p>
+          </div>
+          <form action={logout}>
+            <Button type="submit" variant="destructive" className="rounded-full px-6 shadow-lg shadow-red-500/20">
+              Sign out
+            </Button>
+          </form>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column: Profile & Stats */}
+          <div className="lg:col-span-1 space-y-8">
+            {/* Profile Card */}
+            <div className={glassCard}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
+                  {profile?.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">{profile?.name}</h2>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                    Student
+                  </span>
+                </div>
+              </div>
+              
+              <div className="space-y-4 text-sm">
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <span className="font-medium text-foreground">Name: {profile?.name}</span>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <span className="font-medium text-foreground">Email: {profile?.email}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center`}>
+                <div className="text-2xl font-bold">0</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Events</div>
+              </div>
+              <div className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center`}>
+                <div className="text-2xl font-bold">0</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Certificates</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Events */}
+          <div className="lg:col-span-2">
+            <div className={`${glassCard} h-full min-h-[400px] flex flex-col`}>
+              <div className="flex items-center gap-2 mb-6">
+                <h2 className="text-xl font-bold">Participated Events</h2>
+              </div>
+              
+              <div className="flex-grow flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-white/10 dark:border-white/5 rounded-xl bg-white/5 dark:bg-black/10">
+                <h3 className="text-lg font-semibold mb-2">No events yet</h3>
+                <p className="text-muted-foreground max-w-sm">
+                  You haven't participated in any events. Check out the main feed to discover upcoming campus activities.
+                </p>
+                <Link href="/events" className="mt-6">
+                  <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6">
+                    Browse Events
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+        </div>
       </div>
     </div>
   )

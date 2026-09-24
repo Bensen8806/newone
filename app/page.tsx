@@ -3,10 +3,36 @@ import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Map, Users, Server, User, UserCheck, MapPin } from 'lucide-react'
 import GradientWaves from '@/components/ui/GradientWaves'
+import ScrollVideo from '@/components/ui/ScrollVideo'
 
-export default function Home() {
+import { createClient } from '@/lib/supabase/server'
+
+export default async function Home() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  let roles: string[] = []
+  
+  if (user) {
+    const { data } = await supabase.from('users').select('*').eq('id', user.id).single()
+    roles = data?.role || ['STUDENT']
+  }
+
+  const isAuthorizedForMap = roles.includes('CLUB_HEAD') || roles.includes('HOD') || roles.includes('PRINCIPAL') || roles.includes('ADMIN')
+
+  let dashboardLink = '/login'
+  if (user) {
+    if (roles.includes('ADMIN')) dashboardLink = '/admin/dashboard'
+    else if (roles.includes('PRINCIPAL')) dashboardLink = '/principal/dashboard'
+    else if (roles.includes('HOD')) dashboardLink = '/hod/dashboard'
+    else if (roles.includes('CLUB_HEAD')) dashboardLink = '/club/dashboard'
+    else dashboardLink = '/student/dashboard'
+  }
+
   return (
-    <div className="relative flex flex-col gap-24 py-16 min-h-[calc(100vh-4rem)]">
+    <div className="relative flex flex-col gap-32 pt-24 pb-[150vh] min-h-[300vh]">
+      <ScrollVideo />
+      
       {/* Background Effect */}
       <div className="absolute inset-0 -z-10 h-full w-full opacity-50">
         <GradientWaves
@@ -41,16 +67,18 @@ export default function Home() {
           A structured, role-based system for submitting venue requests, tracking approvals, and publishing campus events — replacing paper-based processes entirely at NSS College of Engineering.
         </p>
         <div className="mt-10 flex justify-center gap-4">
-          <Link href="/login">
+          <Link href={dashboardLink}>
             <Button size="lg" className="font-semibold">
-              Login to Dashboard
+              {user ? 'View Dashboard' : 'Login to Dashboard'}
             </Button>
           </Link>
-          <Link href="/map">
-            <Button size="lg" variant="outline" className="font-semibold">
-              <Map className="mr-2 h-4 w-4" /> View Campus Map
-            </Button>
-          </Link>
+          {(!user || isAuthorizedForMap) && (
+            <Link href="/map">
+              <Button size="lg" variant="outline" className="font-semibold">
+                <Map className="mr-2 h-4 w-4" /> View Campus Map
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 

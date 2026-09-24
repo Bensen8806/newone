@@ -40,9 +40,11 @@ export default async function Navbar() {
               <Link href="/events" className={buttonVariants({ variant: "ghost" })}>
                 Main Feed
               </Link>
-              <Link href="/map" className={buttonVariants({ variant: "ghost" })}>
-                Campus Map
-              </Link>
+              {(isAdmin || isPrincipal || isHod || isClubHead) && (
+                <Link href="/map" className={buttonVariants({ variant: "ghost" })}>
+                  Campus Map
+                </Link>
+              )}
               <Link href={dashboardLink}>
                 <Avatar className="h-8 w-8 hover:opacity-80 transition-opacity cursor-pointer">
                   <AvatarFallback className="bg-primary text-primary-foreground">
