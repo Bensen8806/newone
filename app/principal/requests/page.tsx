@@ -29,7 +29,7 @@ export default async function PrincipalRequests() {
                 <p className="text-sm">Venue: {(event.venues as { name: string })?.name}</p>
                 <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString()}</p>
               </div>
-              <PrincipalActionButtons eventId={event.id} />
+              <PrincipalActionButtons event={event as any} />
             </div>
           ))}
         </div>

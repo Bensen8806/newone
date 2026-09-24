@@ -20,13 +20,14 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-  // Fetch event posts (Flushed 2 days after event date)
+  // Fetch approved events (Flushed 2 days after event date)
   const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-  const { data: posts } = await supabase
-    .from('event_posts')
-    .select('*, events!inner(title, start_time, description, venues(name))')
-    .gte('events.start_time', twoDaysAgo)
-    .order('created_at', { ascending: false })
+  const { data: events } = await supabase
+    .from('events')
+    .select('*, venues(name), event_posts(poster_url)')
+    .eq('status', 'APPROVED')
+    .gte('start_time', twoDaysAgo)
+    .order('start_time', { ascending: true })
 
   let dashboardLink = '/login'
   if (user) {
@@ -169,31 +170,42 @@ export default async function Home() {
           <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Latest Events</h2>
         </div>
         
-        {posts && posts.length > 0 ? (
+        {events && events.length > 0 ? (
           <div className="grid grid-cols-1 gap-12">
-            {posts.map((post) => (
-              <div key={post.id} className="bg-card rounded-xl overflow-hidden shadow-lg border">
-                <div className="p-4 flex items-center justify-between border-b bg-muted/30">
-                  <div className="font-semibold">{post.events?.title}</div>
-                  <div className="text-xs text-muted-foreground">{new Date(post.created_at!).toLocaleDateString()}</div>
-                </div>
-                <div className="w-full h-[500px] relative overflow-hidden bg-black flex items-center justify-center">
-                  <img src={post.poster_url} alt={post.events?.title} className="max-w-full max-h-full object-contain" />
-                </div>
-                <div className="p-4 flex flex-col gap-2">
-                  <div className="flex gap-4 text-sm">
-                    <p><strong>Date:</strong> {new Date(post.events?.start_time!).toLocaleString()}</p>
-                    <p><strong>Venue:</strong> {post.events?.venues?.name}</p>
+            {events.map((event: any) => {
+              const posterUrl = event.event_posts?.[0]?.poster_url;
+              return (
+                <div key={event.id} className="bg-card rounded-xl overflow-hidden shadow-lg border">
+                  <div className="p-4 flex items-center justify-between border-b bg-muted/30">
+                    <div className="font-semibold">{event.title}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(event.start_time).toLocaleDateString()}</div>
                   </div>
-                  {post.events?.description && (
-                    <p className="text-sm text-muted-foreground mt-2">{post.events.description}</p>
+                  
+                  {posterUrl ? (
+                    <div className="w-full h-[500px] relative overflow-hidden bg-black flex items-center justify-center">
+                      <img src={posterUrl} alt={event.title} className="max-w-full max-h-full object-contain" />
+                    </div>
+                  ) : (
+                    <div className="w-full h-40 bg-muted flex items-center justify-center border-b">
+                      <span className="text-muted-foreground font-medium text-lg">{event.title}</span>
+                    </div>
                   )}
-                  <div className="mt-4">
-                    <Button className="w-full">Register Now</Button>
+
+                  <div className="p-4 flex flex-col gap-2">
+                    <div className="flex gap-4 text-sm">
+                      <p><strong>Date:</strong> {new Date(event.start_time).toLocaleString()}</p>
+                      <p><strong>Venue:</strong> {event.venues?.name}</p>
+                    </div>
+                    {event.description && (
+                      <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
+                    )}
+                    <div className="mt-4">
+                      <Button className="w-full">Register Now</Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className="text-center text-muted-foreground">No recent events to show.</p>

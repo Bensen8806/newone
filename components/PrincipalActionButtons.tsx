@@ -2,20 +2,25 @@
 
 import { useState } from 'react'
 import { processEventAction } from '@/app/actions/events'
+import LetterFormatModal from './LetterFormatModal'
+import { EventWithDetails } from '@/lib/types'
 
-export default function PrincipalActionButtons({ eventId }: { eventId: string }) {
+type EventType = EventWithDetails & { clubs?: { name: string } | null, venues?: { name: string } | null }
+
+export default function PrincipalActionButtons({ event }: { event: EventType }) {
   const [showMeetModal, setShowMeetModal] = useState(false)
+  const [showLetterModal, setShowLetterModal] = useState(false)
   const [meetingTime, setMeetingTime] = useState('')
   const [meetingReason, setMeetingReason] = useState('')
 
   const handleAction = async (action: 'APPROVE' | 'REJECT', remark: string) => {
-    await processEventAction(eventId, action, 'PRINCIPAL', remark)
+    await processEventAction(event.id, action, 'PRINCIPAL', remark)
   }
 
   const handleMeet = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!meetingTime || !meetingReason) return
-    await processEventAction(eventId, 'MEET', 'PRINCIPAL', 'Requested a meeting', {
+    await processEventAction(event.id, 'MEET', 'PRINCIPAL', 'Requested a meeting', {
       time: new Date(meetingTime).toISOString(),
       reason: meetingReason
     })
@@ -25,6 +30,7 @@ export default function PrincipalActionButtons({ eventId }: { eventId: string })
   return (
     <>
       <div className="flex gap-2">
+        <button onClick={() => setShowLetterModal(true)} className="px-4 py-2 border rounded-md hover:bg-muted">More Details</button>
         <button onClick={() => handleAction('REJECT', 'Rejected by Principal')} className="px-4 py-2 bg-destructive text-destructive-foreground rounded-md">Reject</button>
         <button onClick={() => setShowMeetModal(true)} className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md border border-gray-300">Meet Me</button>
         <button onClick={() => handleAction('APPROVE', 'Approved by Principal')} className="px-4 py-2 bg-primary text-primary-foreground rounded-md">Approve</button>
@@ -63,6 +69,14 @@ export default function PrincipalActionButtons({ eventId }: { eventId: string })
           </div>
         </div>
       )}
+
+      <LetterFormatModal
+        isOpen={showLetterModal}
+        onClose={() => setShowLetterModal(false)}
+        event={event}
+        role="Principal"
+      />
     </>
   )
 }
+
