@@ -6,6 +6,7 @@ import { logout } from '@/app/actions/auth'
 import GradientWaves from '@/components/ui/GradientWaves'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
+import PendingRequestsList from '@/components/PendingRequestsList'
 
 export default async function HodDashboard() {
   const supabase = createClient()
@@ -23,6 +24,13 @@ export default async function HodDashboard() {
     department = data
   }
 
+  // Fetch pending events for clubs belonging to this HoD's department
+  const { data: events } = await supabase
+    .from('events')
+    .select('*, clubs!inner(name, department_id), venues(name)')
+    .eq('status', 'PENDING_HOD')
+    .eq('clubs.department_id', profile?.department_id)
+
   const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
 
   return (
@@ -38,17 +46,14 @@ export default async function HodDashboard() {
             <p className="text-muted-foreground mt-2 text-lg">Manage department and review event requests.</p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Link href="/hod/requests">
-              <Button className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">View Pending Requests</Button>
-            </Link>
             <form action={logout}>
               <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
             </form>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-8">
+        <div className="grid grid-cols-1 gap-8">
+          <div className="space-y-8">
             <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
@@ -65,6 +70,17 @@ export default async function HodDashboard() {
                 <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Email: {profile?.email}</span></div>
                 <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Department: {department?.name || 'Not assigned'}</span></div>
               </div>
+            </BorderGlow>
+          </div>
+          
+          <div className="mt-4">
+            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
+              <h2 className="text-2xl font-bold mb-4">Pending Venue Requests</h2>
+              <PendingRequestsList 
+                events={events as any} 
+                role="HOD" 
+                roleCode="HOD" 
+              />
             </BorderGlow>
           </div>
         </div>
