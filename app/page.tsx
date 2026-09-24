@@ -20,13 +20,12 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-  // Fetch approved events (Flushed 2 days after event date)
-  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  // Fetch approved events that haven't ended yet
   const { data: events } = await supabase
     .from('events')
     .select('*, venues(name), event_posts(poster_url)')
     .eq('status', 'APPROVED')
-    .gte('start_time', twoDaysAgo)
+    .gte('end_time', new Date().toISOString())
     .order('start_time', { ascending: true })
 
   let dashboardLink = '/login'

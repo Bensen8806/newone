@@ -22,6 +22,17 @@ export default function MapPage() {
   const [endTime, setEndTime] = useState('17:00')
   const [isChecked, setIsChecked] = useState(false)
 
+  // Reset checked state when time inputs change
+  const handleDateChange = (setter: React.Dispatch<React.SetStateAction<Date>>) => (date: Date) => {
+    setter(date)
+    setIsChecked(false)
+  }
+
+  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (time: string) => {
+    setter(time)
+    setIsChecked(false)
+  }
+
   useEffect(() => {
     async function loadVenues() {
       const supabase = createClient()
@@ -35,9 +46,10 @@ export default function MapPage() {
     if (!startDate || !endDate || !startTime || !endTime) return
     setIsChecking(true)
     
-    // Create ISO strings
-    const startStr = startDate.toISOString().split('T')[0]
-    const endStr = endDate.toISOString().split('T')[0]
+    // Create ISO strings safely avoiding timezone shifting bugs
+    const { format } = await import('date-fns')
+    const startStr = format(startDate, 'yyyy-MM-dd')
+    const endStr = format(endDate, 'yyyy-MM-dd')
     const startIso = new Date(`${startStr}T${startTime}:00`).toISOString()
     const endIso = new Date(`${endStr}T${endTime}:00`).toISOString()
 
@@ -90,13 +102,13 @@ export default function MapPage() {
       {/* Sidebar */}
       <MapSidebar 
         startDate={startDate}
-        setStartDate={setStartDate}
+        setStartDate={handleDateChange(setStartDate)}
         endDate={endDate}
-        setEndDate={setEndDate}
+        setEndDate={handleDateChange(setEndDate)}
         startTime={startTime}
-        setStartTime={setStartTime}
+        setStartTime={handleTimeChange(setStartTime)}
         endTime={endTime}
-        setEndTime={setEndTime}
+        setEndTime={handleTimeChange(setEndTime)}
         onCheck={handleCheckAvailability}
         isChecking={isChecking}
         hasChecked={isChecked}

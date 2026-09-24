@@ -58,8 +58,8 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
   const handleSubmit = () => {
     if (!startDate || !endDate || !startTime || !endTime) return
 
-    const startStr = startDate.toISOString().split('T')[0]
-    const endStr = endDate.toISOString().split('T')[0]
+    const startStr = format(startDate, 'yyyy-MM-dd')
+    const endStr = format(endDate, 'yyyy-MM-dd')
     const startIso = new Date(`${startStr}T${startTime}:00`).toISOString()
     const endIso = new Date(`${endStr}T${endTime}:00`).toISOString()
 
