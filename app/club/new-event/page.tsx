@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 export default async function NewEvent() {
   const supabase = createClient()
@@ -18,21 +19,21 @@ export default async function NewEvent() {
         Once approved, you can publish registration links here.
       </p>
       
-      <div className="bg-card p-6 rounded-lg shadow-sm border text-center">
+      <BorderGlow className="bg-card p-6 rounded-lg shadow-sm border text-center" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
         <h2 className="text-xl font-semibold mb-4">Venue Required?</h2>
         <p className="mb-6">Please select your venue and date on the campus map to request approval from your HoD and the Principal.</p>
         <Link href="/map" className="inline-block px-6 py-3 bg-primary text-primary-foreground font-medium rounded-md">
           Go to College Map
         </Link>
-      </div>
+      </BorderGlow>
 
-      <div className="mt-8 bg-card p-6 rounded-lg shadow-sm border text-center">
+      <BorderGlow className="mt-8 bg-card p-6 rounded-lg shadow-sm border text-center" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
         <h2 className="text-xl font-semibold mb-4">Post Registration Link</h2>
         <p className="mb-6">For events that are already approved or don&apos;t require a venue.</p>
         <button className="px-6 py-3 bg-secondary text-secondary-foreground font-medium rounded-md" disabled>
           Coming Soon
         </button>
-      </div>
+      </BorderGlow>
     </div>
   )
 }

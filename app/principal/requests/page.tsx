@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import PrincipalActionButtons from '@/components/PrincipalActionButtons'
+import Galaxy from '@/components/ui/Galaxy'
+import TextType from '@/components/ui/TextType'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 export default async function PrincipalRequests() {
   const supabase = createClient()
@@ -16,26 +19,36 @@ export default async function PrincipalRequests() {
     .select('*, clubs(name), venues(name)')
     .eq('status', 'PENDING_PRINCIPAL')
 
+  const glassCard = "bg-white/10 dark:bg-black/40 backdrop-blur-md border border-white/20 shadow-xl rounded-xl p-6"
+
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Final Approval Queue</h1>
-      {events && events.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6">
-          {events.map((event) => (
-            <div key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
-                <p className="text-sm text-muted-foreground">Club: {(event.clubs as { name: string })?.name}</p>
-                <p className="text-sm">Venue: {(event.venues as { name: string })?.name}</p>
-                <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString()}</p>
+    <div className="relative min-h-[calc(100vh-4rem)] text-white p-8">
+      <div className="fixed inset-0 -z-10 h-screen w-screen bg-black">
+        <Galaxy transparent={false} />
+      </div>
+      
+      <div className="max-w-5xl mx-auto relative z-10">
+        <TextType as="h1" className="text-4xl font-extrabold mb-8 tracking-tight" text="Final Approval Queue" typingSpeed={50} loop={false} />
+        {events && events.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6">
+            {events.map((event) => (
+              <div key={event.id} className={`${glassCard} flex flex-col md:flex-row justify-between items-start md:items-center`}>
+                <div className="mb-4 md:mb-0">
+                  <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
+                  <p className="text-sm text-gray-300">Club: {(event.clubs as { name: string })?.name}</p>
+                  <p className="text-sm text-gray-300">Venue: {(event.venues as { name: string })?.name}</p>
+                  <p className="text-sm text-gray-300">Date: {new Date(event.start_time).toLocaleDateString()}</p>
+                </div>
+                <PrincipalActionButtons event={event as any} />
               </div>
-              <PrincipalActionButtons event={event as any} />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground">No events awaiting final approval.</p>
-      )}
+            ))}
+          </div>
+        ) : (
+          <BorderGlow className={`${glassCard} flex items-center justify-center min-h-[200px]`} backgroundColor="transparent" glowColor="40 100 70">
+            <p className="text-gray-300 text-lg">No events awaiting final approval.</p>
+          </BorderGlow>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import GradientWaves from '@/components/ui/GradientWaves'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 export default async function MainFeed() {
   const supabase = createClient()
@@ -49,7 +50,7 @@ export default async function MainFeed() {
         {events && events.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
-              <div key={event.id} className="bg-card/80 backdrop-blur p-6 rounded-lg shadow-sm border flex flex-col">
+              <BorderGlow key={event.id} className="bg-card/80 backdrop-blur p-6 rounded-lg shadow-sm border flex flex-col" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
                 <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
                 <p className="text-sm text-muted-foreground mb-4">{(event.clubs as { name: string })?.name}</p>
                 <div className="text-sm space-y-1 mb-4 flex-grow">
@@ -60,13 +61,13 @@ export default async function MainFeed() {
                 <button className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium hover:bg-primary/90 transition-colors">
                   View & Register
                 </button>
-              </div>
+              </BorderGlow>
             ))}
           </div>
         ) : (
-          <div className="text-center p-12 bg-muted/20 backdrop-blur rounded-lg border">
+          <BorderGlow className="text-center p-12 bg-muted/20 backdrop-blur rounded-lg border w-full" backgroundColor="hsl(var(--muted))" glowColor="270 100 70">
             <p className="text-muted-foreground">No approved events to display at the moment.</p>
-          </div>
+          </BorderGlow>
         )}
       </div>
     </div>

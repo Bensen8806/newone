@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import BorderGlow from '@/components/ui/BorderGlow'
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true)
@@ -31,7 +32,11 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md space-y-8 rounded-xl border bg-card p-8 shadow-sm">
+      <BorderGlow 
+        className="w-full max-w-md space-y-8 rounded-xl shadow-sm p-8" 
+        backgroundColor="hsl(var(--card))"
+        glowColor="270 100 70" 
+      >
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-primary">
             {isLogin ? 'Welcome back' : 'Create an account'}
@@ -87,7 +92,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="text-center text-sm mt-8">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
@@ -97,7 +102,7 @@ export default function LoginPage() {
             {isLogin ? 'Sign up' : 'Sign in'}
           </button>
         </div>
-      </div>
+      </BorderGlow>
     </div>
   )
 }
