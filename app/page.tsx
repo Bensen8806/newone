@@ -40,7 +40,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="relative flex flex-col gap-32 pt-24 pb-[150vh] min-h-[300vh]">
+    <div className="relative flex flex-col gap-32 pt-24 pb-24 min-h-screen">
       <ScrollVideo />
       
       {/* Background Effect */}

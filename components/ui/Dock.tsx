@@ -103,7 +103,7 @@ function DockLabel({ children, className = '', isHovered }: { children: React.Re
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: -10 }}
           exit={{ opacity: 0, y: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           className={`dock-label ${className}`}
           role="tooltip"
           style={{ x: '-50%' }}
@@ -134,31 +134,31 @@ export default function Dock({
   items,
   className = '',
   spring = { mass: 0.1, stiffness: 150, damping: 12 },
-  magnification = 70,
-  distance = 200,
-  panelHeight = 68,
-  dockHeight = 256,
-  baseItemSize = 50
+  magnification = 64,
+  distance = 160,
+  panelHeight = 62,
+  baseItemSize = 44
 }: DockProps) {
   const mouseX = useMotionValue(Infinity)
   const isHovered = useMotionValue(0)
 
-  const maxHeight = useMemo(
-    () => Math.max(dockHeight, magnification + magnification / 2 + 4),
-    [magnification, dockHeight]
-  )
-  const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight])
-  const height = useSpring(heightRow, spring)
+  // Keep container height stable to eliminate auto-scrolling & layout shift
+  const containerHeight = useMemo(() => {
+    return Math.max(panelHeight + 16, magnification + 20)
+  }, [panelHeight, magnification])
 
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none' }} className="dock-outer">
-      <motion.div
-        onMouseMove={({ pageX }) => {
+    <div
+      style={{ height: containerHeight, minHeight: containerHeight }}
+      className="dock-outer flex items-end justify-center"
+    >
+      <div
+        onMouseMove={(e) => {
           isHovered.set(1)
-          mouseX.set(pageX)
+          mouseX.set(e.clientX)
         }}
         onMouseLeave={() => {
-          isHovered.set(0);
+          isHovered.set(0)
           mouseX.set(Infinity)
         }}
         className={`dock-panel ${className}`}
@@ -182,7 +182,7 @@ export default function Dock({
             <DockLabel>{item.label}</DockLabel>
           </DockItem>
         ))}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   )
 }
