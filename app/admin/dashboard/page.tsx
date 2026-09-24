@@ -32,10 +32,6 @@ export default async function AdminDashboard() {
 
   const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
 
-  return (
-    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
-      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <GradientWaves horizonColor="#fbbf24" waveColor="#fcd34d" crestColor="#d97706" speed={0.4} amplitude={2.5} waveScale={0.6} waveRatio={0.9} swell={35} turbulence={20} tilt={1.11} zoom={1.0} height={5.5} fogDepth={15} detail="medium" brightness={1.0} opacity={1.0} mouseInteraction={true} parallaxStrength={0.5} grain={true} grainIntensity={0.05} />
   const { data: events } = await supabase
     .from('events')
     .select('*, venues(name)')
@@ -43,23 +39,9 @@ export default async function AdminDashboard() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <div className="flex gap-4">
-          <Link href="/map">
-            <Button variant="outline">Book Venue</Button>
-          </Link>
-          <form action={logout}>
-            <Button type="submit" variant="destructive">Log out</Button>
-          </form>
-        </div>
-      </div>
-      <div className="bg-card p-6 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold mb-4">Profile Info</h2>
-        <p><strong>Name:</strong> {profile?.name}</p>
-        <p><strong>Email:</strong> {profile?.email}</p>
-        <p><strong>Roles:</strong> {profile?.role?.join(', ')}</p>
+    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
+      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
+        <GradientWaves horizonColor="#fbbf24" waveColor="#fcd34d" crestColor="#d97706" speed={0.4} amplitude={2.5} waveScale={0.6} waveRatio={0.9} swell={35} turbulence={20} tilt={1.11} zoom={1.0} height={5.5} fogDepth={15} detail="medium" brightness={1.0} opacity={1.0} mouseInteraction={true} parallaxStrength={0.5} grain={true} grainIntensity={0.05} />
       </div>
 
       <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
@@ -68,9 +50,14 @@ export default async function AdminDashboard() {
             <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Admin Dashboard" typingSpeed={50} loop={false} />
             <p className="text-muted-foreground mt-2 text-lg">Manage platform users and role requests.</p>
           </div>
-          <form action={logout}>
-            <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
-          </form>
+          <div className="flex gap-3 flex-wrap">
+            <Link href="/map">
+              <Button className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">Book Venue</Button>
+            </Link>
+            <form action={logout}>
+              <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
+            </form>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
