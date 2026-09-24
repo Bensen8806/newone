@@ -5,6 +5,7 @@ import { EventWithDetails } from '@/lib/types'
 import { processEventAction } from '@/app/actions/events'
 import { Button } from '@/components/ui/button'
 import LetterFormatModal from './LetterFormatModal'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 type EventType = EventWithDetails & { clubs?: { name: string } | null, venues?: { name: string } | null }
 
@@ -42,7 +43,7 @@ export default function PendingRequestsList({ events, role, roleCode }: PendingR
     <>
       <div className="grid grid-cols-1 gap-6">
         {events.map((event) => (
-          <div key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <BorderGlow key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-4" backgroundColor="transparent" glowColor="270 100 70">
             <div>
               <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
               <p className="text-sm text-muted-foreground">Club: {event.clubs?.name}</p>
@@ -71,7 +72,7 @@ export default function PendingRequestsList({ events, role, roleCode }: PendingR
                 {isPending && processingId === event.id ? 'Processing...' : 'Approve'}
               </Button>
             </div>
-          </div>
+          </BorderGlow>
         ))}
       </div>
 

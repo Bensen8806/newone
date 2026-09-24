@@ -1,179 +1,148 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
-
-const FRAME_COUNT = 488
+import React, { useEffect, useRef } from 'react'
 
 export default function ScrollVideo() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [images, setImages] = useState<HTMLImageElement[]>([])
+  const videoRef = useRef<HTMLVideoElement>(null)
   
-  // Preload images
   useEffect(() => {
-    const loadedImages: HTMLImageElement[] = []
-    let loadedCount = 0
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
 
-    for (let i = 1; i <= FRAME_COUNT; i++) {
-      const img = new Image()
-      // format: frame_0001.png
-      const frameNum = i.toString().padStart(4, '0')
-      img.src = `/video-frames-premium/frame_${frameNum}.png`
-      
-      img.onload = () => {
-        loadedCount++
-        if (loadedCount === FRAME_COUNT) {
-          setImages(loadedImages)
-          // Draw first frame when fully loaded if canvas is ready
-          const ctx = canvasRef.current?.getContext('2d')
-          if (ctx && loadedImages[0]) {
-            drawScaledImage(ctx, loadedImages[0])
-          }
-        }
-      }
-      loadedImages.push(img)
-    }
-  }, [])
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
 
-  const drawScaledImage = (ctx: CanvasRenderingContext2D, img: HTMLImageElement) => {
-    const canvas = ctx.canvas
-    // Scale image to cover canvas while maintaining aspect ratio
-    const hRatio = canvas.width / img.width
-    const vRatio = canvas.height / img.height
-    const ratio = Math.max(hRatio, vRatio)
-    
-    const centerShift_x = (canvas.width - img.width * ratio) / 2
-    const centerShift_y = (canvas.height - img.height * ratio) / 2
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(
-      img, 
-      0, 0, img.width, img.height,
-      centerShift_x, centerShift_y, img.width * ratio, img.height * ratio
-    )
-  }
-
-  // Handle Resize
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current
-      if (canvas) {
-        const dpr = window.devicePixelRatio || 1
-        canvas.width = window.innerWidth * dpr
-        canvas.height = window.innerHeight * dpr
-        canvas.style.width = `${window.innerWidth}px`
-        canvas.style.height = `${window.innerHeight}px`
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  // Handle Scroll
-  useEffect(() => {
-    if (images.length !== FRAME_COUNT) return // wait till all loaded
-
+    let targetTime = 0;
+    let currentTime = 0;
     let animationFrameId: number;
-    let targetFrame = 0;
-    let currentFrame = 0;
-    let lastDrawnFrame = -1;
-    let lastBlurAmount = -1;
-    
     let isScrolling = false;
     let scrollTimeout: NodeJS.Timeout;
     
-    // Cinematic smoothness factor
-    const ease = 0.05; 
-    const hardStopEase = 0.4; // Grabs the brakes when scrolling stops
+    // Tighter easing for snappier, smoother response that tracks the wheel closer
+    const ease = 0.15; 
+    
+    const drawToCanvas = () => {
+      if (video.readyState >= 2) {
+        const hRatio = canvas.width / video.videoWidth;
+        const vRatio = canvas.height / video.videoHeight;
+        const ratio = Math.max(hRatio, vRatio);
+        
+        const centerShift_x = (canvas.width - video.videoWidth * ratio) / 2;
+        const centerShift_y = (canvas.height - video.videoHeight * ratio) / 2;
+        
+        ctx.drawImage(
+          video, 
+          0, 0, video.videoWidth, video.videoHeight,
+          centerShift_x, centerShift_y, video.videoWidth * ratio, video.videoHeight * ratio
+        );
+      }
+    };
 
     const handleScroll = () => {
       isScrolling = true;
       clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        isScrolling = false;
-      }, 50); // Detect hard stop 50ms after the last scroll event
+      scrollTimeout = setTimeout(() => { isScrolling = false; }, 50);
 
-      const scrollY = window.scrollY
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollFraction = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0;
       
-      // Calculate scroll fraction
-      const scrollFraction = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0
+      let opacity = 0;
+      if (scrollFraction < 0.2) opacity = scrollFraction / 0.2;
+      else if (scrollFraction > 0.8) opacity = (1 - scrollFraction) / 0.2;
+      else opacity = 1;
+      canvas.style.opacity = opacity.toString();
       
-      // Calculate opacity for smooth fade in/out
-      let opacity = 0
-      if (scrollFraction < 0.2) {
-        opacity = scrollFraction / 0.2
-      } else if (scrollFraction > 0.8) {
-        opacity = (1 - scrollFraction) / 0.2
-      } else {
-        opacity = 1
-      }
-      
-      if (canvasRef.current) {
-        canvasRef.current.style.opacity = opacity.toString()
-      }
-
-      targetFrame = scrollFraction * (FRAME_COUNT - 1)
-    }
+      // Fallback duration if video metadata hasn't fully propagated
+      const duration = isNaN(video.duration) || video.duration === 0 ? 6.88 : video.duration;
+      targetTime = scrollFraction * duration;
+    };
 
     const renderLoop = () => {
-      const velocity = Math.abs(targetFrame - currentFrame);
-      const currentEase = isScrolling ? ease : hardStopEase;
-
-      // Snap to target if very close to prevent endless micro-drifting
-      if (velocity < 0.05) {
-        currentFrame = targetFrame;
-      } else {
-        // Lerp current frame towards target frame
-        currentFrame += (targetFrame - currentFrame) * currentEase;
+      const currentEase = isScrolling ? ease : 0.2;
+      currentTime += (targetTime - currentTime) * currentEase;
+      
+      // We can update continuously without throttling!
+      // The video has been specially encoded with ALL-INTRA keyframes (keyint=1).
+      // This means seeking to any arbitrary timestamp takes exactly O(1) time
+      // and virtually zero CPU overhead, so we can blast the decoder at 60/120Hz.
+      if (Math.abs(video.currentTime - currentTime) > 0.001) {
+         video.currentTime = currentTime;
       }
-      
-      const frameIndex = Math.round(currentFrame);
-      const ctx = canvasRef.current?.getContext('2d');
-      
-      // Only draw if the actual integer frame has changed to prevent choppiness/flickering
-      if (ctx && images[frameIndex] && frameIndex !== lastDrawnFrame) {
-        drawScaledImage(ctx, images[frameIndex]);
-        lastDrawnFrame = frameIndex;
-      }
-      
-      if (canvasRef.current) {
-        // Instantly kill the blur if we stop scrolling, otherwise scale by velocity
-        let blurAmount = isScrolling ? Math.min(velocity * 0.05, 4) : 0; 
-        if (velocity < 0.05) blurAmount = 0;
 
-        // Only update DOM if blur changed significantly to prevent CSS thrashing
-        if (Math.abs(blurAmount - lastBlurAmount) > 0.05 || (blurAmount === 0 && lastBlurAmount !== 0)) {
-           canvasRef.current.style.filter = `blur(${blurAmount}px) contrast(1.2) saturate(1.1) brightness(0.9) sepia(0.2) hue-rotate(-10deg)`;
-           lastBlurAmount = blurAmount;
-        }
+      // If browser doesn't support requestVideoFrameCallback, fallback to polling
+      if (!('requestVideoFrameCallback' in HTMLVideoElement.prototype)) {
+         drawToCanvas();
       }
       
       animationFrameId = requestAnimationFrame(renderLoop);
+    };
+
+    const handleResize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      drawToCanvas();
+    };
+
+    const onFrame = () => {
+      drawToCanvas();
+      if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+        (video as any).requestVideoFrameCallback(onFrame);
+      }
+    };
+
+    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+      (video as any).requestVideoFrameCallback(onFrame);
     }
 
-    // Initialize
-    handleScroll();
-    renderLoop();
+    video.addEventListener('loadeddata', () => {
+      handleResize();
+      handleScroll();
+      drawToCanvas();
+    });
+
+    video.addEventListener('seeked', drawToCanvas);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      clearTimeout(scrollTimeout)
-      cancelAnimationFrame(animationFrameId)
-    }
-  }, [images])
+    handleScroll();
+    handleResize();
+    renderLoop();
+    video.load();
 
-  // Mouse wobble removed for stability
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+      video.removeEventListener('seeked', drawToCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full -z-[5] pointer-events-none transition-opacity duration-75 overflow-hidden">
+    <div className="fixed top-0 left-0 w-full h-full -z-[5] pointer-events-none transition-opacity duration-75 overflow-hidden bg-black">
+      {/* 
+        CRITICAL: Video cannot be display:none (hidden) or opacity:0 in some browsers, 
+        otherwise decoding stops. We use absolute positioning off-screen instead.
+      */}
+      <video
+        ref={videoRef}
+        src="/video.mp4"
+        preload="auto"
+        muted
+        playsInline
+        style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px' }}
+      />
       <canvas
         ref={canvasRef}
         className="w-full h-full object-cover opacity-0"
         style={{ 
-          transition: 'opacity 0.1s ease-out'
-          // Filter is now applied dynamically in the renderLoop for motion blur
+          transition: 'opacity 0.1s ease-out',
+          filter: 'contrast(1.2) saturate(1.1) brightness(0.9) sepia(0.2) hue-rotate(-10deg)'
         }}
       />
     </div>

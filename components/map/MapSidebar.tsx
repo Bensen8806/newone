@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 interface MapSidebarProps {
   startDate: Date
@@ -54,7 +55,7 @@ export default function MapSidebar({
       <div className="p-4 flex flex-col gap-4">
         
         {/* Time Slot Selection */}
-        <Card>
+        <BorderGlow className="rounded-xl shadow-lg border bg-card" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Filter className="h-4 w-4 text-muted-foreground" />
@@ -140,10 +141,10 @@ export default function MapSidebar({
               {isChecking ? 'Checking...' : 'Check Availability'}
             </Button>
           </CardContent>
-        </Card>
+        </BorderGlow>
 
         {/* Legend */}
-        <Card>
+        <BorderGlow className="rounded-xl shadow-lg border bg-card" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm">
               <Layers className="h-4 w-4 text-muted-foreground" />
@@ -169,7 +170,7 @@ export default function MapSidebar({
               <span>{hasChecked ? 'Not Available' : 'No Selection Yet'}</span>
             </div>
           </CardContent>
-        </Card>
+        </BorderGlow>
 
       </div>
     </aside>
