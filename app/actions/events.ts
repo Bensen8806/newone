@@ -122,14 +122,15 @@ export async function processEventAction(
   return { success: true }
 }
 
-export async function createEventPost(eventId: string, posterUrl: string) {
+export async function createEventPost(eventId: string, posterUrl: string, registrationUrl?: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
   const { error } = await supabase.from('event_posts').insert({
     event_id: eventId,
-    poster_url: posterUrl
+    poster_url: posterUrl,
+    registration_url: registrationUrl || null
   })
 
   if (error) return { error: error.message }

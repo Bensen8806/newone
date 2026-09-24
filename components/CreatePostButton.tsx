@@ -6,11 +6,12 @@ import { createEventPost } from '@/app/actions/events'
 export default function CreatePostButton({ eventId }: { eventId: string }) {
   const [showModal, setShowModal] = useState(false)
   const [posterUrl, setPosterUrl] = useState('')
+  const [registrationUrl, setRegistrationUrl] = useState('')
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!posterUrl) return
-    await createEventPost(eventId, posterUrl)
+    await createEventPost(eventId, posterUrl, registrationUrl)
     setShowModal(false)
     alert("Post created successfully!")
   }
@@ -37,6 +38,17 @@ export default function CreatePostButton({ eventId }: { eventId: string }) {
                   required 
                 />
                 <p className="text-xs text-muted-foreground mt-1">For now, enter a direct URL to an image.</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Registration URL (Optional)</label>
+                <input 
+                  type="url" 
+                  value={registrationUrl} 
+                  onChange={e => setRegistrationUrl(e.target.value)} 
+                  className="w-full p-2 border rounded"
+                  placeholder="https://forms.gle/..."
+                />
+                <p className="text-xs text-muted-foreground mt-1">Link for students to register.</p>
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 border rounded">Cancel</button>

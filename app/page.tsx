@@ -20,10 +20,10 @@ export default async function Home() {
 
   const isAuthorizedForMap = roles.some(role => role !== 'STUDENT')
 
-  // Fetch approved events that haven't ended yet
+      // Fetch approved events that haven't ended yet
   const { data: events } = await supabase
     .from('events')
-    .select('*, venues(name), event_posts(poster_url)')
+    .select('*, venues(name), event_posts(poster_url, registration_url)')
     .eq('status', 'APPROVED')
     .gte('end_time', new Date().toISOString())
     .order('start_time', { ascending: true })
@@ -173,6 +173,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 gap-12">
             {events.map((event: any) => {
               const posterUrl = event.event_posts?.[0]?.poster_url;
+              const registrationUrl = event.event_posts?.[0]?.registration_url;
               return (
                 <div key={event.id} className="bg-card rounded-xl overflow-hidden shadow-lg border">
                   <div className="p-4 flex items-center justify-between border-b bg-muted/30">
@@ -199,7 +200,13 @@ export default async function Home() {
                       <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
                     )}
                     <div className="mt-4">
-                      <Button className="w-full">Register Now</Button>
+                      {registrationUrl ? (
+                        <Link href={registrationUrl} target="_blank">
+                          <Button className="w-full">Register Now</Button>
+                        </Link>
+                      ) : (
+                        <Button className="w-full" disabled>Registration Not Available</Button>
+                      )}
                     </div>
                   </div>
                 </div>
