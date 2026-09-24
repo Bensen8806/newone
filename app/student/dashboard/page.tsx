@@ -4,6 +4,8 @@ import { logout } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import GradientWaves from '@/components/ui/GradientWaves'
 import Link from 'next/link'
+import TextType from '@/components/ui/TextType'
+import BorderGlow from '@/components/ui/BorderGlow'
 
 export default async function StudentDashboard() {
   const supabase = createClient()
@@ -20,7 +22,7 @@ export default async function StudentDashboard() {
     .single()
 
   // For a premium look, define a reusable glass card class
-  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-xl rounded-2xl p-6"
+  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
@@ -54,11 +56,11 @@ export default async function StudentDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">Student Dashboard</h1>
+            <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Student Dashboard" typingSpeed={50} loop={false} />
             <p className="text-muted-foreground mt-2 text-lg">Manage your profile and track your campus events.</p>
           </div>
           <form action={logout}>
-            <Button type="submit" variant="destructive" className="rounded-full px-6 shadow-lg shadow-red-500/20">
+            <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">
               Sign out
             </Button>
           </form>
@@ -69,7 +71,7 @@ export default async function StudentDashboard() {
           {/* Left Column: Profile & Stats */}
           <div className="lg:col-span-1 space-y-8">
             {/* Profile Card */}
-            <div className={glassCard}>
+            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
                   {profile?.name ? profile.name.charAt(0).toUpperCase() : 'U'}
@@ -90,24 +92,24 @@ export default async function StudentDashboard() {
                   <span className="font-medium text-foreground">Email: {profile?.email}</span>
                 </div>
               </div>
-            </div>
+            </BorderGlow>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4">
-              <div className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center`}>
-                <div className="text-2xl font-bold">0</div>
+              <BorderGlow className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center group`} backgroundColor="transparent" glowColor="40 100 70">
+                <div className="text-4xl font-extrabold bg-gradient-to-br from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-sm group-hover:scale-110 transition-transform duration-500">0</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Events</div>
-              </div>
-              <div className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center`}>
-                <div className="text-2xl font-bold">0</div>
+              </BorderGlow>
+              <BorderGlow className={`${glassCard} !p-4 flex flex-col items-center justify-center text-center group`} backgroundColor="transparent" glowColor="40 100 70">
+                <div className="text-4xl font-extrabold bg-gradient-to-br from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-sm group-hover:scale-110 transition-transform duration-500">0</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Certificates</div>
-              </div>
+              </BorderGlow>
             </div>
           </div>
 
           {/* Right Column: Events */}
           <div className="lg:col-span-2">
-            <div className={`${glassCard} h-full min-h-[400px] flex flex-col`}>
+            <BorderGlow className={`${glassCard} h-full min-h-[400px] flex flex-col`} backgroundColor="transparent" glowColor="40 100 70">
               <div className="flex items-center gap-2 mb-6">
                 <h2 className="text-xl font-bold">Participated Events</h2>
               </div>
@@ -123,7 +125,7 @@ export default async function StudentDashboard() {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </BorderGlow>
           </div>
           
         </div>
