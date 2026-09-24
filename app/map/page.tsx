@@ -14,6 +14,7 @@ export default function MapPage() {
   const [availability, setAvailability] = useState<AvailabilityState>({})
   const [selectedVenue, setSelectedVenue] = useState<VenueWithDept | null>(null)
   const [isChecking, setIsChecking] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   
   // Sidebar state
   const [startDate, setStartDate] = useState<Date>(new Date())
@@ -34,12 +35,23 @@ export default function MapPage() {
   }
 
   useEffect(() => {
-    async function loadVenues() {
+    async function loadInitialData() {
       const supabase = createClient()
-      const { data } = await supabase.from('venues').select('*, departments(name, hod_user_id)')
-      if (data) setVenues(data as VenueWithDept[])
+      const [{ data: venuesData }, { data: { user } }] = await Promise.all([
+        supabase.from('venues').select('*, departments(name, hod_user_id)'),
+        supabase.auth.getUser()
+      ])
+      
+      if (venuesData) setVenues(venuesData as VenueWithDept[])
+
+      if (user) {
+        const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+        if (userData?.role?.includes('ADMIN')) {
+          setIsAdmin(true)
+        }
+      }
     }
-    loadVenues()
+    loadInitialData()
   }, [])
 
   const handleCheckAvailability = async () => {
@@ -141,6 +153,7 @@ export default function MapPage() {
         startTime={startTime}
         endTime={endTime}
         onBookingSuccess={handleCheckAvailability}
+        isAdmin={isAdmin}
       />
     </div>
   )

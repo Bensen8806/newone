@@ -31,9 +31,10 @@ interface RequestModalProps {
   startTime: string
   endTime: string
   onBookingSuccess?: () => void
+  isAdmin?: boolean
 }
 
-export default function RequestModal({ isOpen, onClose, venue, startDate, endDate, startTime, endTime, onBookingSuccess }: RequestModalProps) {
+export default function RequestModal({ isOpen, onClose, venue, startDate, endDate, startTime, endTime, onBookingSuccess, isAdmin }: RequestModalProps) {
   const [ktuPoints, setKtuPoints] = useState<boolean>(false)
 
   const [isPending, startTransition] = useTransition()
@@ -91,8 +92,12 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
         
         {/* Header */}
         <div className={`${deptColor} p-5 pb-6 text-primary-foreground relative`}>
-          <DialogTitle className="text-xl font-bold mb-1">New Venue Request</DialogTitle>
-          <div className="text-sm opacity-90">Requesting: {venue.name}</div>
+          <DialogTitle className="text-xl font-bold mb-1">
+            {isAdmin ? "Instant Book Venue ⚡" : "New Venue Request"}
+          </DialogTitle>
+          <div className="text-sm opacity-90">
+            {isAdmin ? `Admin Booking: ${venue.name}` : `Requesting: ${venue.name}`}
+          </div>
         </div>
         
         {/* Form Body */}
@@ -207,8 +212,8 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isPending}>
-            {isPending ? 'Submitting...' : 'Submit for Approval →'}
+          <Button onClick={handleSubmit} disabled={isPending} className={isAdmin ? "bg-amber-600 hover:bg-amber-700 text-white" : ""}>
+            {isPending ? 'Submitting...' : isAdmin ? 'Instant Book ⚡' : 'Submit for Approval →'}
           </Button>
         </div>
       </DialogContent>

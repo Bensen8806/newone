@@ -23,9 +23,10 @@ interface VenuePanelProps {
   startTime: string
   endTime: string
   onBookingSuccess?: () => void
+  isAdmin?: boolean
 }
 
-export default function VenuePanel({ venue, onClose, availability, hasChecked, startDate, endDate, startTime, endTime, onBookingSuccess }: VenuePanelProps) {
+export default function VenuePanel({ venue, onClose, availability, hasChecked, startDate, endDate, startTime, endTime, onBookingSuccess, isAdmin }: VenuePanelProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Use a generic placeholder until venue is fully loaded
@@ -128,6 +129,7 @@ export default function VenuePanel({ venue, onClose, availability, hasChecked, s
         startTime={startTime}
         endTime={endTime}
         onBookingSuccess={onBookingSuccess}
+        isAdmin={isAdmin}
       />
     </>
   )
