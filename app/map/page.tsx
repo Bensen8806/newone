@@ -113,7 +113,7 @@ export default function MapPage() {
   const handleClosePanel = () => setSelectedVenue(null)
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-background">
+    <div className="flex flex-1 w-full pt-[88px] overflow-hidden bg-background min-h-0">
       {/* Sidebar */}
       <MapSidebar 
         startDate={startDate}
@@ -130,19 +130,14 @@ export default function MapPage() {
       />
 
       {/* Main Map Area */}
-      <main className="flex-1 relative bg-black overflow-auto scrollbar-hide">
-        <div className="min-h-full min-w-full flex items-center justify-center p-6">
-          <CampusMap 
-            venues={venues} 
-            availability={availability} 
-            selectedVenueId={selectedVenue?.id || null}
-            onVenueClick={handleVenueClick}
-            hasChecked={isChecked}
-          />
-        </div>
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-zinc-900/90 text-zinc-400 px-4 py-2 rounded-md text-sm backdrop-blur-md border border-zinc-800">
-          {isChecked ? 'Click any venue to see details and request a booking' : 'Select a date/time range, then click Check Availability'}
-        </div>
+      <main className="flex-1 relative bg-black overflow-hidden flex items-center justify-center p-4 lg:p-8">
+        <CampusMap 
+          venues={venues} 
+          availability={availability} 
+          selectedVenueId={selectedVenue?.id || null}
+          onVenueClick={handleVenueClick}
+          hasChecked={isChecked}
+        />
       </main>
 
       {/* Slide-out Panel */}

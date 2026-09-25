@@ -6,6 +6,7 @@ export const VENUES = [
   { id: 'V04', name: 'E-One Hall', dept: 'ADM', capacity: 120, svgId: 'venue-e-one' },
   { id: 'V05', name: 'CNC Lab', dept: 'ADM', capacity: 60, svgId: 'venue-cnc' },
   { id: 'V06', name: 'Skill Dev. Center', dept: 'ADM', capacity: 60, svgId: 'venue-skill' },
+  { id: 'V24', name: 'Open Stage', dept: 'ADM', capacity: 500, svgId: 'venue-open-stage' },
 
   // Computer Science & Engineering
   { id: 'V07', name: 'CSE Seminar Hall', dept: 'CS', capacity: 100, svgId: 'venue-cse-seminar' },
@@ -25,6 +26,7 @@ export const VENUES = [
   // Mechanical Engineering
   { id: 'V16', name: 'Mechanical Seminar Hall', dept: 'ME', capacity: 100, svgId: 'venue-me-seminar' },
   { id: 'V17', name: 'Mechanical CAD Lab', dept: 'ME', capacity: 60, svgId: 'venue-me-cad' },
+  { id: 'V25', name: 'Heat Engine Lab', dept: 'ME', capacity: 60, svgId: 'venue-me-heat' },
 
   // Instrumentation & Control Engg
   { id: 'V18', name: 'ICE Seminar Hall', dept: 'IC', capacity: 100, svgId: 'venue-ice-seminar' },

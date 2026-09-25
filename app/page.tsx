@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Map, Users, Server, User, UserCheck, MapPin } from 'lucide-react'
 import GradientWaves from '@/components/ui/GradientWaves'
@@ -8,6 +9,7 @@ import BorderGlow from '@/components/ui/BorderGlow'
 import ScrollVideo from '@/components/ui/ScrollVideo'
 import AccordionGallery from '@/components/ui/AccordionGallery'
 import RegistrationModal from '@/components/RegistrationModal'
+import EventMarquee from '@/components/ui/EventMarquee'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -57,7 +59,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="relative flex flex-col gap-32 pt-24 pb-24 min-h-screen">
+    <div className="relative flex flex-col gap-16 pt-20 pb-20 min-h-screen">
       <ScrollVideo />
       
       {/* Background Effect */}
@@ -93,21 +95,34 @@ export default async function Home() {
         <h1 className="font-poppins text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl drop-shadow-md">
           NSSCE Event & <span className="text-primary">Venue Booking</span> System
         </h1>
-        <div className="mt-10 flex justify-center gap-4">
+        <div className="mt-10 flex justify-center gap-6">
           <Link href={dashboardLink}>
-            <Button size="lg" className="font-semibold">
+            <SpecularButton 
+              size="lg" 
+              className="font-semibold"
+              baseColor="#1f2937"
+              lineColor="#d8b4fe"
+            >
               {user ? 'View Dashboard' : 'Login to Dashboard'}
-            </Button>
+            </SpecularButton>
           </Link>
           {(!user || isAuthorizedForMap) && (
             <Link href="/map">
-              <Button size="lg" variant="outline" className="font-semibold">
-                <Map className="mr-2 h-4 w-4" /> View Campus Map
-              </Button>
+              <SpecularButton 
+                size="lg" 
+                className="font-semibold"
+                baseColor="#111827"
+                lineColor="#9ca3af"
+              >
+                <div className="flex items-center"><Map className="mr-2 h-4 w-4" /> View Campus Map</div>
+              </SpecularButton>
             </Link>
           )}
         </div>
       </section>
+
+      {/* Rolling News Bar */}
+      <EventMarquee events={events} />
 
       {/* Event Feed Section */}
       <section className="container mx-auto px-4 max-w-5xl z-10 relative">
@@ -118,7 +133,10 @@ export default async function Home() {
         {events && events.length > 0 ? (
           <div className="w-full">
             <AccordionGallery 
-              items={events.map((event: any) => ({
+              items={[...events]
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                .slice(0, 7)
+                .map((event: any) => ({
                 image: event.event_posts?.[0]?.poster_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
                 label: event.title,
                 subtitle: `${new Date(event.start_time).toLocaleDateString('en-GB')} • ${event.venues?.name || 'TBA'}`,
@@ -135,7 +153,7 @@ export default async function Home() {
       </section>
 
       {/* Roles Section */}
-      <section className="container mx-auto px-4 max-w-7xl mt-24">
+      <section className="container mx-auto px-4 max-w-7xl">
         <div className="mb-10 max-w-3xl">
           <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-red-500 mb-3">Access Control</div>
           <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Role-based access</h2>
@@ -146,8 +164,8 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
             <CardHeader className="p-5">
-              <div className="h-9 w-9 rounded-md bg-zinc-500/10 flex items-center justify-center mb-4">
-                <Server className="h-4 w-4 text-zinc-400" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
+                <Image src="/role-icon.jpg" width={40} height={40} alt="Admin Role" className="object-cover" />
               </div>
               <CardTitle className="text-base mb-2">Admin</CardTitle>
               <CardDescription className="text-xs leading-relaxed">
@@ -158,8 +176,8 @@ export default async function Home() {
           
           <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
             <CardHeader className="p-5">
-              <div className="h-9 w-9 rounded-md bg-blue-500/10 flex items-center justify-center mb-4">
-                <User className="h-4 w-4 text-blue-500" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
+                <Image src="/role-icon.jpg" width={40} height={40} alt="Principal Role" className="object-cover" />
               </div>
               <CardTitle className="text-base mb-2">Principal</CardTitle>
               <CardDescription className="text-xs leading-relaxed">
@@ -170,8 +188,8 @@ export default async function Home() {
           
           <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
             <CardHeader className="p-5">
-              <div className="h-9 w-9 rounded-md bg-amber-500/10 flex items-center justify-center mb-4">
-                <Users className="h-4 w-4 text-amber-500" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
+                <Image src="/role-icon.jpg" width={40} height={40} alt="HOD Role" className="object-cover" />
               </div>
               <CardTitle className="text-base mb-2">HOD</CardTitle>
               <CardDescription className="text-xs leading-relaxed">
@@ -182,8 +200,8 @@ export default async function Home() {
           
           <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
             <CardHeader className="p-5">
-              <div className="h-9 w-9 rounded-md bg-red-500/10 flex items-center justify-center mb-4">
-                <MapPin className="h-4 w-4 text-red-500" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
+                <Image src="/role-icon.jpg" width={40} height={40} alt="Club Head Role" className="object-cover" />
               </div>
               <CardTitle className="text-base mb-2">Club Head</CardTitle>
               <CardDescription className="text-xs leading-relaxed">
@@ -194,8 +212,8 @@ export default async function Home() {
           
           <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
             <CardHeader className="p-5">
-              <div className="h-9 w-9 rounded-md bg-green-500/10 flex items-center justify-center mb-4">
-                <UserCheck className="h-4 w-4 text-green-500" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
+                <Image src="/role-icon.jpg" width={40} height={40} alt="Student Role" className="object-cover" />
               </div>
               <CardTitle className="text-base mb-2">Student</CardTitle>
               <CardDescription className="text-xs leading-relaxed">

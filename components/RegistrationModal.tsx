@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import SpecularButton from "@/components/ui/SpecularButton"
 
 export default function RegistrationModal({
   registrationUrl,
@@ -21,7 +22,15 @@ export default function RegistrationModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="w-full">Register Now</Button>} />
+      <DialogTrigger asChild>
+        <SpecularButton 
+          className="w-full"
+          baseColor="#065f46"
+          lineColor="#10b981"
+        >
+          Register Now
+        </SpecularButton>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] w-[90vw] h-[80vh] flex flex-col p-0">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Register: {eventTitle}</DialogTitle>

@@ -2,6 +2,7 @@
 
 
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import {
   Sheet,
   SheetContent,
@@ -106,14 +107,16 @@ export default function VenuePanel({ venue, onClose, availability, hasChecked, s
           )}
 
           {/* Footer Actions */}
-          <div className="p-6 border-t bg-muted/10">
-            <Button 
+          <div className="p-6 border-t bg-muted/10 flex justify-center">
+            <SpecularButton 
               className="w-full" 
               disabled={!hasChecked || availability === 'BOOKED'}
               onClick={() => setIsModalOpen(true)}
+              baseColor="#1f2937"
+              lineColor="#d8b4fe"
             >
               {availability === 'BOOKED' ? 'Venue Booked' : 'Request This Venue'}
-            </Button>
+            </SpecularButton>
             {!hasChecked && <p className="text-xs text-center text-muted-foreground mt-2">Check availability first to book</p>}
           </div>
         </SheetContent>

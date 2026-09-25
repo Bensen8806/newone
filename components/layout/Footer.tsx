@@ -50,10 +50,10 @@ export default function Footer() {
 
   return (
     <footer className="w-full bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/20 border-t border-white/10 mt-auto">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         
         {/* Navigation Dock in Footer (Above other links) */}
-        <div className="w-full flex flex-col items-center gap-2 pb-6">
+        <div className="w-full flex flex-col items-center gap-2 pb-4">
           <span className="text-[11px] font-bold uppercase tracking-widest text-red-500">
             Quick Navigation
           </span>
@@ -72,10 +72,10 @@ export default function Footer() {
           />
         </div>
 
-        <Separator className="mb-8 bg-border/40" />
+        <Separator className="mb-4 bg-border/40" />
 
         {/* Main Grid: Left side Brand + ETLab, Right side Club Portals */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-4">
           {/* Brand & Description + ETLab on the Left Side */}
           <div className="max-w-md space-y-4">
             <div className="flex items-center gap-2">
@@ -120,10 +120,10 @@ export default function Footer() {
           {/* Quick Links Section on the Right Side */}
           <div className="flex-1 lg:max-w-2xl">
             <nav aria-label="Campus Portals and Clubs">
-              <h3 className="font-poppins text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+              <h3 className="font-poppins text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                 Campus & Club Portals
               </h3>
-              <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6 text-sm">
+              <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-4 text-sm">
                 {QUICK_LINKS.map((link) => (
                   <li key={link.name}>
                     <a
@@ -155,10 +155,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <Separator className="my-6 bg-border/40" />
+        <Separator className="my-4 bg-border/40" />
 
         {/* Bottom Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
           <p className="text-center sm:text-left text-xs leading-loose">
             Built for NSS College of Engineering, Palakkad. All rights reserved.
           </p>

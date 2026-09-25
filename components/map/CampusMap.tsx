@@ -100,22 +100,13 @@ export default function CampusMap({
 
   return (
     <div 
-      className="w-full max-w-[980px] h-auto cursor-pointer"
+      className="w-full h-full max-w-6xl mx-auto flex items-center justify-center cursor-pointer"
       ref={mapRef}
       onMouseMove={handleMouseMove}
     >
       {tooltipContent}
-      <svg viewBox="0 0 1000 685" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-        <rect width="1000" height="685" fill="#000000" rx="0"/>
-        {/* Road lines */}
-        <rect x="0" y="220" width="1000" height="10" fill="#18181b" opacity=".8"/>
-        <rect x="0" y="447" width="1000" height="13" fill="#18181b" opacity=".8"/>
-        <rect x="325" y="220" width="15" height="460" fill="#18181b" opacity=".8"/>
-        <rect x="660" y="220" width="15" height="460" fill="#18181b" opacity=".8"/>
-        <line x1="0" y1="225" x2="1000" y2="225" stroke="#27272a" strokeWidth="1" strokeDasharray="20,15" opacity=".6"/>
-        <line x1="332" y1="220" x2="332" y2="680" stroke="#27272a" strokeWidth="1" strokeDasharray="20,15" opacity=".6"/>
-        <line x1="667" y1="220" x2="667" y2="680" stroke="#27272a" strokeWidth="1" strokeDasharray="20,15" opacity=".6"/>
-
+      <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <rect width="1000" height="700" fill="#000000" rx="0"/>
         {/* Departments */}
         {LAYOUT.depts.map(b => {
           const dc = DC[b.dept as keyof typeof DC]
@@ -170,8 +161,7 @@ export default function CampusMap({
           )
         })}
         
-        {/* Compass */}
-        <text x="975" y="670" textAnchor="middle" fontFamily="var(--font-inter)" fontSize="11" fill="#52525b" fontWeight="700">N ↑</text>
+        {/* Map Label */}
         <text x="500" y="680" textAnchor="middle" fontFamily="var(--font-poppins)" fontSize="9" fill="rgba(63,63,70,0.5)" fontWeight="700" letterSpacing="3">NSS COLLEGE OF ENGINEERING, PALAKKAD</text>
       </svg>
     </div>

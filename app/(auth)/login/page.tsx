@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { login, signup } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -109,9 +110,15 @@ export default function LoginPage() {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <SpecularButton 
+            type="submit" 
+            className="w-full" 
+            disabled={loading}
+            baseColor="#1f2937"
+            lineColor="#d8b4fe"
+          >
             {loading ? 'Please wait...' : (isLogin ? 'Sign in' : 'Sign up')}
-          </Button>
+          </SpecularButton>
         </form>
 
         <div className="text-center text-sm mt-8">

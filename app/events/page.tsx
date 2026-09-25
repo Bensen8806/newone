@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import GradientWaves from '@/components/ui/GradientWaves'
+import SpecularButton from '@/components/ui/SpecularButton'
 import BorderGlow from '@/components/ui/BorderGlow'
 
 export default async function MainFeed() {
@@ -69,9 +70,13 @@ export default async function MainFeed() {
                     <p><strong>Venue:</strong> {(event.venues as { name: string })?.name}</p>
                     <p className="line-clamp-3 mt-2">{event.description}</p>
                   </div>
-                  <button className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium hover:bg-primary/90 transition-colors">
+                  <SpecularButton 
+                    className="w-full"
+                    baseColor="#0f172a"
+                    lineColor="#3b82f6"
+                  >
                     View & Register
-                  </button>
+                  </SpecularButton>
                 </BorderGlow>
               ))}
             </div>
@@ -95,9 +100,14 @@ export default async function MainFeed() {
                     <p><strong>Venue:</strong> {(event.venues as { name: string })?.name}</p>
                     <p className="line-clamp-3 mt-2">{event.description}</p>
                   </div>
-                  <button className="w-full bg-secondary text-secondary-foreground py-2 rounded-md font-medium" disabled>
+                  <SpecularButton 
+                    className="w-full"
+                    disabled
+                    baseColor="#1e293b"
+                    lineColor="#64748b"
+                  >
                     Event Ended
-                  </button>
+                  </SpecularButton>
                 </BorderGlow>
               ))}
             </div>
