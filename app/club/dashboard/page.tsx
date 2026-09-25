@@ -20,7 +20,11 @@ export default async function ClubDashboard() {
   const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
   const { data: club } = await supabase.from('clubs').select('*').eq('head_user_id', user.id).single()
   const { data: events } = await supabase.from('events').select('*, venues(name)').eq('club_head_id', user.id).order('created_at', { ascending: false })
-  const { data: facultyAdvisors } = await supabase.from('users').select('*').contains('role', ['FACULTY_ADVISOR'])
+  
+  // Use admin client to bypass RLS for users table
+  const { createAdminClient } = await import('@/lib/supabase/admin')
+  const adminClient = createAdminClient()
+  const { data: facultyAdvisors } = await adminClient.from('users').select('*').contains('role', ['FACULTY_ADVISOR'])
   const { data: departments } = await supabase.from('departments').select('*')
 
   const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
@@ -50,9 +54,14 @@ export default async function ClubDashboard() {
           <div className="lg:col-span-1 space-y-8">
             <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
-                  {profile?.name ? profile.name.charAt(0).toUpperCase() : 'C'}
-                </div>
+                {club?.logo_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={club.logo_url} alt="Club Logo" className="w-16 h-16 rounded-full object-cover shadow-inner" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
+                    {profile?.name ? profile.name.charAt(0).toUpperCase() : 'C'}
+                  </div>
+                )}
                 <div>
                   <h2 className="text-xl font-bold">{profile?.name}</h2>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30">
