@@ -1,0 +1,3 @@
+https://github.com/cruip/open-react-template?utm_source=chatgpt.com
+
+https://github.com/shadcn-ui/ui?utm_source=chatgpt.com

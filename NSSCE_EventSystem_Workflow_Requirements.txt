@@ -1,0 +1,549 @@
+﻿================================================================================
+  NSSCE PALAKKAD — EVENT MANAGEMENT & VENUE BOOKING SYSTEM
+  Workflow & Requirements Analysis (Reference Document)
+================================================================================
+  Institution  : NSS College of Engineering (NSSCE), Akathethara, Palakkad
+  Affiliation  : APJ Abdul Kalam Technological University (KTU)
+  Motto        : "Uddhared atmanAtmanam" — Elevate yourself through the power
+                 of your mind
+  Last Updated : 2026-09-07
+  Version      : 1.0
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+ 1. System Overview
+ 2. Stakeholder & Role Analysis
+ 3. Venue Inventory
+ 4. Comprehensive Workflow
+ 5. Functional Requirements
+ 6. Non-Functional Requirements
+ 7. UI/UX Requirements
+ 8. Data Model
+ 9. Edge Cases & Business Rules
+10. KTU Activity Points Integration
+11. Out of Scope (Version 1.0)
+12. Risk Analysis
+13. Change Log
+
+================================================================================
+1. SYSTEM OVERVIEW
+================================================================================
+
+A role-based, transparent web application that digitalises the complete lifecycle
+of an event at NSSCE — from a club head's initial idea to a student's downloaded
+certificate — eliminating paper trails, reducing scheduling conflicts, and
+ensuring institutional accountability.
+
+================================================================================
+2. STAKEHOLDER & ROLE ANALYSIS
+================================================================================
+
+2.1 ROLE HIERARCHY
+------------------
+  PRINCIPAL       <- Final authority
+  HODs            <- Department & venue gatekeepers
+  CLUB HEADS      <- Event initiators
+  STUDENTS        <- Consumers & participants
+  ADMIN           <- System administrator
+
+2.2 ROLE DEFINITIONS
+--------------------
+  Principal  : Head of NSSCE. Final approver for all events.
+  HOD        : Head of a Department (7 departments). Approves venue requests
+               within their dept; also creates dept-level events.
+  Club Head  : Student leader of a registered club. Creates and submits event
+               proposals.
+  Student    : Enrolled student at NSSCE. Views events, registers, receives
+               certificates.
+  Admin      : Manages user accounts, roles, departments, venues.
+
+2.3 DEPARTMENTS AT NSSCE
+------------------------
+  Code | Department                          | Venue(s) Controlled
+  -----|-------------------------------------|----------------------------
+  CE   | Civil Engineering                   | CE Seminar Hall
+  CS   | Computer Science & Engineering      | CS Seminar Hall
+  EC   | Electronics & Communication Engg   | ECE Seminar Hall (AC)
+  EE   | Electrical & Electronics Engg      | EE Seminar Hall
+  IC   | Instrumentation & Control Engg     | IC Seminar Hall
+  ME   | Mechanical Engineering              | ME Seminar Hall
+  BS   | Basic Sciences & Humanities         | —
+  ADM  | Administration                      | Auditorium, Main Seminar Hall,
+       |                                     | Sports Venues, Open Ground
+
+2.4 CLUBS & BODIES AT NSSCE
+----------------------------
+  Type           | Club / Body
+  ---------------|---------------------------------------------------
+  Professional   | IEEE Student Chapter, IE(I) Students Chapter,
+                 | SAEINDIA, ISTE, IIC (Institution's Innovation
+                 | Council)
+  Innovation     | iEDC, TinkerHub
+  Social         | NSS (National Service Scheme), Women Development
+                 | Cell (WDC)
+  Cultural       | Music Club, Dance Club, Literature Club
+  Sports         | Sports Club
+
+================================================================================
+3. VENUE INVENTORY
+================================================================================
+
+  ID  | Venue Name            | Owner  | Capacity | Features
+  ----|-----------------------|--------|----------|-------------------------------
+  V01 | Main Auditorium       | ADMIN  | 800      | PA system, LCD projector, stage
+  V02 | Main Seminar Hall     | ADMIN  | 100      | Multimedia, smart board, podium
+  V03 | CS Seminar Hall       | CS     | 100      | Multimedia, smart board
+  V04 | ECE Seminar Hall      | EC     | 60-100   | AC, multimedia, smart board
+  V05 | EEE Seminar Hall      | EE     | 60       | Multimedia
+  V06 | ME Seminar Hall       | ME     | 60       | Multimedia
+  V07 | CE Seminar Hall       | CE     | 100      | Multimedia
+  V08 | IC Seminar Hall       | IC     | 60       | Multimedia
+  V09 | Outdoor Stadium       | ADMIN  | 2000+    | 400m track, cricket, football
+  V10 | Indoor Stadium        | ADMIN  | 200      | Badminton, Table Tennis
+  V11 | Open Ground/Courtyard | ADMIN  | Unlimited| Open-air events, fests
+
+================================================================================
+4. COMPREHENSIVE WORKFLOW
+================================================================================
+
+4.1 EVENT LIFECYCLE STATE MACHINE
+----------------------------------
+
+  [DRAFT]
+     |
+     | Club Head submits
+     v
+  [PENDING_HOD_REVIEW]
+     |
+     |--- REJECT ---> [REJECTED_BY_HOD] ---> Notification + Remark --> Club Head
+     |
+     |--- APPROVE --->
+                    [PENDING_PRINCIPAL_REVIEW]
+                       |
+                       |--- REJECT ---> [REJECTED_BY_PRINCIPAL] --> Club Head
+                       |
+                       |--- APPROVE --->
+                                      [APPROVED — PUBLISHED]
+                                         |
+                                         | Students register
+                                         v
+                                      [ONGOING / EVENT DAY]
+                                         |
+                                         | Attendance marked
+                                         v
+                                      [COMPLETED]
+                                         |
+                                         | Certificates generated
+                                         v
+                                      [ARCHIVED]
+
+  Note: Club Head can EDIT and RE-SUBMIT after any rejection.
+
+4.2 STEP-BY-STEP WORKFLOW
+--------------------------
+
+  STEP 1 — Club Head: Event Proposal Creation
+  -------------------------------------------
+  1. Club Head logs in -> navigates to "Create New Event"
+  2. Fills in:
+     - Event Title, Description, Category (Technical/Cultural/Sports/Social)
+     - Target Audience (All / specific year / specific dept)
+     - Proposed Date & Time (start + end)
+     - Expected Attendance
+     - Special Requirements (equipment, catering, external speakers, etc.)
+     - Resource Persons / Speakers (if any)
+     - KTU Activity Points applicable? (yes/no + category)
+  3. Opens Interactive Campus Map -> selects an available venue
+     - Map highlights only venues AVAILABLE in selected time slot
+     - Hovering shows venue details (capacity, features, owning dept)
+  4. Submits -> system auto-identifies the HOD of the venue's department
+  5. Status changes to PENDING_HOD_REVIEW
+  6. Club Head receives submission confirmation
+
+  STEP 2 — HOD: Venue Request Review
+  ------------------------------------
+  1. HOD receives in-app notification + email
+  2. Reviews full event proposal
+  3. Checks venue conflicts, departmental concerns (exams, dept events)
+  4. Adds a MANDATORY REMARK (positive or constructive)
+  5. Action:
+     - APPROVE -> status: PENDING_PRINCIPAL_REVIEW, Principal notified
+     - REJECT  -> status: REJECTED_BY_HOD, Club Head notified with remark
+
+  STEP 3 — Principal: Final Approval
+  ------------------------------------
+  1. Principal receives in-app notification + email (HOD-approved events only)
+  2. Reviews full proposal + HOD's remark
+  3. Adds own MANDATORY REMARK
+  4. Action:
+     - APPROVE -> status: APPROVED, event published to all users
+     - REJECT  -> status: REJECTED_BY_PRINCIPAL, Club Head notified with
+                  both HOD remark and Principal remark
+
+  STEP 4 — Club Head: Post-Decision Actions
+  ------------------------------------------
+  - If Approved : View published event, share, mark attendance later
+  - If Rejected : Edit and re-submit as new draft (old trail preserved)
+
+  STEP 5 — Students: Discovery & Registration
+  ---------------------------------------------
+  1. Browse Event Calendar (all approved events)
+  2. Filter by: Date / Department / Category / Club / Venue / Activity Points
+  3. Click event -> view full details
+  4. Click "Register" -> system records registration
+  5. Pre-event: Reminder notification (1 day before)
+
+  STEP 6 — Event Day: Attendance
+  --------------------------------
+  1. Club Head / Faculty coordinator marks attendance for registered students
+  2. System records attended vs registered-but-absent
+
+  STEP 7 — Post-Event: Certificate Generation
+  ---------------------------------------------
+  1. Club Head marks event as Completed after event end time
+  2. System auto-generates certificates:
+     - All attendees    -> "Certificate of Participation"
+     - Specific students (manually added) -> "Certificate of Completion"
+  3. Students log in -> My Certificates -> download PDF
+
+4.3 HOD APPROVAL ROUTING (VENUE -> HOD MAPPING)
+-------------------------------------------------
+  Venue Selected           | Approval Goes To
+  -------------------------|----------------------------
+  Main Auditorium          | Admin HOD / Principal
+  Main Seminar Hall        | Admin HOD
+  CS Seminar Hall          | HOD of CS Dept
+  ECE Seminar Hall         | HOD of EC Dept
+  EEE Seminar Hall         | HOD of EE Dept
+  ME Seminar Hall          | HOD of ME Dept
+  CE Seminar Hall          | HOD of CE Dept
+  IC Seminar Hall          | HOD of IC Dept
+  Outdoor/Indoor Stadium   | Admin HOD / Sports Coordinator
+
+================================================================================
+5. FUNCTIONAL REQUIREMENTS
+================================================================================
+
+5.1 AUTHENTICATION & AUTHORIZATION
+------------------------------------
+  FR-01 : Users log in with college email (@nssce.ac.in or
+           @student.nssce.ac.in)
+  FR-02 : Role-based access control (RBAC) enforced throughout
+  FR-03 : Admin can assign/change user roles
+  FR-04 : Session management with secure logout
+  FR-05 : Password reset via email
+
+5.2 EVENT MANAGEMENT
+---------------------
+  FR-06 : Club Heads can create, edit (before submission), and view own events
+  FR-07 : Events have mandatory KTU Activity Points category field
+  FR-08 : No booking for a venue with conflicting approved event in same window
+  FR-09 : Club Heads can re-submit rejected events after editing
+  FR-10 : Full audit trail (approver, action, remark, timestamp) visible to all
+
+5.3 VENUE & MAP SYSTEM
+-----------------------
+  FR-11 : Interactive SVG map of NSSCE showing all bookable venues
+  FR-12 : Each venue shows real-time availability:
+           - GREEN  : Available (no conflicts)
+           - YELLOW : Pending (has a pending approval request)
+           - RED    : Booked (confirmed approved event)
+  FR-13 : Clicking a venue shows details and mini availability calendar
+  FR-14 : Time-slot conflict detection enforced at database level
+
+5.4 APPROVAL WORKFLOW
+----------------------
+  FR-15 : HOD sees only requests for venues in their department
+  FR-16 : Remark field is mandatory for both approval and rejection
+  FR-17 : Principal sees only HOD-approved requests
+  FR-18 : Rejected events display exact rejection remark prominently to Club Head
+  FR-19 : Re-submission creates new approval trail (old trail preserved)
+
+5.5 STUDENT REGISTRATION
+-------------------------
+  FR-20 : Students can register for any approved, upcoming event
+  FR-21 : Students can unregister up to 24 hours before the event
+  FR-22 : Maximum capacity enforcement (no registration beyond venue capacity)
+  FR-23 : Waitlist system when capacity is full
+  FR-24 : Students see registered events on their profile dashboard
+
+5.6 CERTIFICATE SYSTEM
+-----------------------
+  FR-25 : Certificates auto-generated as PDF after event completion
+  FR-26 : Each certificate includes:
+           - Student name, Roll number
+           - Event name, Date, Venue
+           - Issuing authority (NSSCE)
+           - KTU Activity Points category
+  FR-27 : Certificates include a unique QR code for verification
+  FR-28 : Two types:
+           - PARTICIPATION : for all attendees
+           - COMPLETION    : for specific achievers (manually assigned)
+  FR-29 : Students download certificates from their profile
+
+5.7 TRANSPARENCY & NOTIFICATIONS
+----------------------------------
+  FR-30 : Public event pipeline board shows all events and current status
+           (visible to all logged-in users)
+  FR-31 : In-app notifications for: submission, approval, rejection,
+           registration confirmation, event reminders
+  FR-32 : Email notifications for critical actions (approval/rejection)
+  FR-33 : Full audit log visible to all users
+
+5.8 KTU ACTIVITY POINTS INTEGRATION
+-------------------------------------
+  FR-34 : Each event tagged with KTU Activity Points category
+  FR-35 : After completion, system generates consolidated activity points
+           report per student (exportable as PDF/Excel for KTU portal)
+
+================================================================================
+6. NON-FUNCTIONAL REQUIREMENTS
+================================================================================
+
+  ID     | Requirement         | Target
+  -------|---------------------|-------------------------------------------
+  NFR-01 | Performance         | Page load < 2 seconds on 4G
+  NFR-02 | Availability        | 99.5% uptime
+  NFR-03 | Mobile Responsive   | Fully usable on mobile browsers
+  NFR-04 | Security            | SQL injection, XSS, CSRF protection
+  NFR-05 | Scalability         | Support 3000+ concurrent student users
+  NFR-06 | Data Integrity      | No double-booking (DB-level constraint)
+  NFR-07 | Accessibility       | WCAG 2.1 AA compliance
+  NFR-08 | Browser Support     | Chrome, Firefox, Safari, Edge (latest 2)
+
+================================================================================
+7. UI/UX REQUIREMENTS
+================================================================================
+
+7.1 BRANDING
+-------------
+  Colors     : Deep maroon/dark red (NSS branding) + gold accents +
+               white/off-white background
+  Logos      : NSSCE logo + KTU logo in header
+  Typography : Clean, professional (Inter or Poppins)
+  Motto      : "Uddhared atmanAtmanam" subtly referenced in design
+
+7.2 KEY INTERFACE COMPONENTS
+------------------------------
+
+  Landing Page
+  - Hero section: NSSCE branding, motto, quick stats
+  - Upcoming events preview (3-5 events)
+  - Quick navigation to Login
+
+  Role Dashboards
+  ---------------
+  Club Head  : My Events (status cards), Quick Create, Notifications
+  HOD        : Pending Reviews count, Dept events calendar, Notifications
+  Principal  : Pending Final Approvals, All Events overview, System stats
+  Student    : Upcoming registered events, Available events feed, Certificates
+
+  Campus Map (Interactive)
+  ------------------------
+  - Top-down schematic SVG of NSSCE campus
+  - Color-coded venue availability
+  - Date/time range picker -> map updates in real-time
+  - Click venue -> slide-out panel with details + book button
+
+  Event Pipeline Board (Transparency)
+  ------------------------------------
+  - Kanban-style or timeline view of all events at each stage
+  - Filterable by department, club, date range
+  - Clicking any event shows full detail + audit trail
+
+7.3 MOBILE UX
+--------------
+  - Bottom navigation bar on mobile
+  - Campus map with pinch-to-zoom
+  - Certificate download triggers native PDF viewer
+
+================================================================================
+8. DATA MODEL
+================================================================================
+
+  USERS
+    id              : UUID (primary key)
+    name            : string
+    email           : string (unique, @nssce.ac.in)
+    role            : enum [ADMIN, PRINCIPAL, HOD, CLUB_HEAD, STUDENT]
+    department_id   : FK -> DEPARTMENTS
+    roll_number     : string (for students)
+    created_at      : timestamp
+
+  DEPARTMENTS
+    id              : UUID
+    name            : string (e.g., "Computer Science & Engineering")
+    code            : string (e.g., "CS")
+    hod_user_id     : FK -> USERS
+
+  CLUBS
+    id              : UUID
+    name            : string
+    type            : enum [PROFESSIONAL, INNOVATION, SOCIAL, CULTURAL, SPORTS]
+    head_user_id    : FK -> USERS
+
+  VENUES
+    id              : UUID
+    name            : string
+    department_id   : FK -> DEPARTMENTS (determines which HOD approves)
+    capacity        : integer
+    features        : JSON {ac, projector, smartboard, pa_system}
+    svg_element_id  : string (ties to the campus map SVG element)
+
+  EVENTS
+    id                        : UUID
+    title                     : string
+    description               : text
+    club_id                   : FK -> CLUBS
+    club_head_id              : FK -> USERS
+    venue_id                  : FK -> VENUES
+    start_time                : timestamp
+    end_time                  : timestamp
+    expected_attendance       : integer
+    category                  : enum [TECHNICAL, CULTURAL, SPORTS, SOCIAL,
+                                      WORKSHOP]
+    ktu_activity_points_cat   : string (nullable)
+    status                    : enum [DRAFT, PENDING_HOD, PENDING_PRINCIPAL,
+                                      APPROVED, REJECTED, COMPLETED, ARCHIVED]
+    special_requirements      : text
+    created_at / updated_at   : timestamp
+
+  APPROVALS
+    id              : UUID
+    event_id        : FK -> EVENTS
+    approver_id     : FK -> USERS
+    approver_role   : enum [HOD, PRINCIPAL]
+    action          : enum [APPROVE, REJECT]
+    remark          : text (mandatory)
+    actioned_at     : timestamp
+
+  REGISTRATIONS
+    id              : UUID
+    event_id        : FK -> EVENTS
+    student_id      : FK -> USERS
+    registered_at   : timestamp
+    status          : enum [REGISTERED, WAITLISTED, CANCELLED]
+    attended        : boolean (default: false)
+
+  CERTIFICATES
+    id                : UUID
+    registration_id   : FK -> REGISTRATIONS
+    type              : enum [PARTICIPATION, COMPLETION]
+    verification_code : string (unique, for QR)
+    issued_at         : timestamp
+
+  NOTIFICATIONS
+    id              : UUID
+    user_id         : FK -> USERS
+    type            : enum [SUBMISSION, APPROVAL, REJECTION, REMINDER,
+                            REGISTRATION]
+    message         : text
+    event_id        : FK -> EVENTS
+    read            : boolean
+    created_at      : timestamp
+
+================================================================================
+9. EDGE CASES & BUSINESS RULES
+================================================================================
+
+  #  | Scenario                                      | System Behavior
+  ---|-----------------------------------------------|-------------------------
+  1  | Venue has PENDING (not approved) event in      | Venue shown as yellow.
+     | same time slot                                 | Still selectable. If
+     |                                               | both approved, admin
+     |                                               | notified for resolution.
+  ---|-----------------------------------------------|-------------------------
+  2  | Club Head resubmits with same venue after      | New approval cycle
+     | rejection                                      | starts; old trail kept.
+  ---|-----------------------------------------------|-------------------------
+  3  | Event time changes after HOD approval but      | Club Head must
+     | before Principal approval                      | re-submit (Principal
+     |                                               | approval resets).
+  ---|-----------------------------------------------|-------------------------
+  4  | Student registered but didn't attend           | No certificate issued;
+     |                                               | marked as "Absent".
+  ---|-----------------------------------------------|-------------------------
+  5  | Club Head is also a student                    | Dual role allowed;
+     |                                               | system permits both.
+  ---|-----------------------------------------------|-------------------------
+  6  | Principal is also HOD of a department          | Can perform HOD duties
+     |                                               | AND final approvals.
+  ---|-----------------------------------------------|-------------------------
+  7  | Event cancelled after approval                 | Club Head can cancel;
+     |                                               | all registered students
+     |                                               | notified; venue freed.
+  ---|-----------------------------------------------|-------------------------
+  8  | Venue capacity reached                         | New registrations go
+     |                                               | to Waitlist; first
+     |                                               | waitlisted notified on
+     |                                               | cancellation.
+  ---|-----------------------------------------------|-------------------------
+  9  | Multiple clubs request same venue, same time   | First submitted gets
+     |                                               | priority; second gets
+     |                                               | conflict warning.
+  ---|-----------------------------------------------|-------------------------
+  10 | Club Head leaves/graduates                     | Admin reassigns Club
+     |                                               | Head role to another.
+
+================================================================================
+10. KTU ACTIVITY POINTS INTEGRATION
+================================================================================
+
+KTU requires students to earn activity points for graduation.
+
+This system will:
+  - Tag each event with a KTU activity points SEGMENT:
+      Segment 2 : Professional Self-Initiatives
+      Segment 6 : Cultural & Sports
+      (etc.)
+  - Track student attendance (verified participation)
+  - Generate semester-wise activity points report per student
+  - Export in a format compatible with KTU e-Governance portal submission
+
+This directly saves administrative time at semester end and is a key
+differentiator for this system.
+
+================================================================================
+11. OUT OF SCOPE (VERSION 1.0)
+================================================================================
+
+  - Integration with official KTU e-Governance portal API (no public API)
+  - Real-time video streaming for hybrid events
+  - Budget/finance management for events
+  - External (non-NSSCE) event submissions
+  - Mobile native app (iOS/Android)
+
+================================================================================
+12. RISK ANALYSIS
+================================================================================
+
+  Risk                               | Likelihood | Impact | Mitigation
+  -----------------------------------|------------|--------|----------------------
+  Users not adopting system          | Medium     | High   | Simple UX; mandatory
+                                     |            |        | use policy
+  HOD slow to approve                | Medium     | Medium | Auto-escalation
+                                     |            |        | reminder after 48 hrs
+  Data loss                          | Low        | High   | Supabase daily
+                                     |            |        | backups + Vercel edge
+  Venue double-booking (race cond.)  | Low        | High   | DB-level unique
+                                     |            |        | constraint + locking
+  Certificate fraud                  | Low        | High   | QR code verification
+                                     |            |        | endpoint
+
+================================================================================
+13. CHANGE LOG
+================================================================================
+
+  Version | Date       | Author       | Notes
+  --------|------------|--------------|--------------------------------------
+  1.0     | 2026-09-07 | Antigravity  | Initial document created.
+          |            |              | Based on NSSCE website data + KTU
+          |            |              | guidelines.
+  --------|------------|--------------|--------------------------------------
+  [ADD FUTURE UPDATES BELOW]
+
+
+================================================================================
+END OF DOCUMENT
+================================================================================

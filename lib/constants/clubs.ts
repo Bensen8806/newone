@@ -1,0 +1,15 @@
+export const CLUBS = [
+  { name: 'IEEE Student Chapter',       type: 'PROFESSIONAL' },
+  { name: 'IE(I) Students Chapter',     type: 'PROFESSIONAL' },
+  { name: 'SAEINDIA',                   type: 'PROFESSIONAL' },
+  { name: 'ISTE',                       type: 'PROFESSIONAL' },
+  { name: 'IIC',                        type: 'PROFESSIONAL' },
+  { name: 'iEDC',                       type: 'INNOVATION'   },
+  { name: 'TinkerHub',                  type: 'INNOVATION'   },
+  { name: 'NSS',                        type: 'SOCIAL'       },
+  { name: 'Women Development Cell',     type: 'SOCIAL'       },
+  { name: 'Music Club',                 type: 'CULTURAL'     },
+  { name: 'Dance Club',                 type: 'CULTURAL'     },
+  { name: 'Literature Club',            type: 'CULTURAL'     },
+  { name: 'Sports Club',                type: 'SPORTS'       },
+]

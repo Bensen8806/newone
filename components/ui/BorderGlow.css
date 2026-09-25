@@ -1,0 +1,48 @@
+.border-glow-card {
+  --edge-proximity: 0;
+  
+  position: relative;
+  border-radius: var(--border-radius, 28px);
+  isolation: isolate;
+  background: var(--card-bg, rgba(15, 15, 20, 0.4));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  overflow: visible;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.border-glow-card:hover {
+  background: rgba(30, 30, 35, 0.5); /* Slightly lighter on hover */
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* The subtle outer glow that intensifies on hover/proximity */
+.border-glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px; /* Very thin border glow */
+  border-radius: inherit;
+  z-index: -1;
+  background: var(--glow-gradient);
+  filter: blur(8px); /* Tighter blur spread */
+  /* Base opacity + proximity based opacity */
+  opacity: calc(0.05 + (var(--edge-proximity) / 100 * var(--glow-intensity) * 0.5));
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+
+.border-glow-card:hover::before {
+  /* On hover, boost the base opacity slightly */
+  opacity: calc(0.1 + (var(--edge-proximity) / 100 * var(--glow-intensity) * 0.5));
+}
+
+.border-glow-inner {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}

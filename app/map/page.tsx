@@ -1,0 +1,158 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import CampusMap from '@/components/map/CampusMap'
+import MapSidebar from '@/components/map/MapSidebar'
+import VenuePanel from '@/components/map/VenuePanel'
+import { VenueWithDept } from '@/lib/types'
+
+export type AvailabilityState = Record<string, 'AVAILABLE' | 'PENDING' | 'BOOKED'>
+
+export default function MapPage() {
+  const [venues, setVenues] = useState<VenueWithDept[]>([])
+  const [availability, setAvailability] = useState<AvailabilityState>({})
+  const [selectedVenue, setSelectedVenue] = useState<VenueWithDept | null>(null)
+  const [isChecking, setIsChecking] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  
+  // Sidebar state
+  const [startDate, setStartDate] = useState<Date>(new Date())
+  const [endDate, setEndDate] = useState<Date>(new Date())
+  const [startTime, setStartTime] = useState('09:00')
+  const [endTime, setEndTime] = useState('17:00')
+  const [isChecked, setIsChecked] = useState(false)
+
+  // Reset checked state when time inputs change
+  const handleDateChange = (setter: React.Dispatch<React.SetStateAction<Date>>, isStart: boolean = false) => (date: Date) => {
+    setter(date)
+    if (isStart && date > endDate) {
+      setEndDate(date)
+    }
+    setIsChecked(false)
+  }
+
+  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (time: string) => {
+    setter(time)
+    setIsChecked(false)
+  }
+
+  useEffect(() => {
+    async function loadInitialData() {
+      const supabase = createClient()
+      const [{ data: venuesData }, { data: { user } }] = await Promise.all([
+        supabase.from('venues').select('*, departments(name, hod_user_id)'),
+        supabase.auth.getUser()
+      ])
+      
+      if (venuesData) setVenues(venuesData as VenueWithDept[])
+
+      if (user) {
+        const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+        if (userData?.role?.includes('ADMIN')) {
+          setIsAdmin(true)
+        }
+      }
+    }
+    loadInitialData()
+  }, [])
+
+  const handleCheckAvailability = async () => {
+    if (!startDate || !endDate || !startTime || !endTime) return
+    setIsChecking(true)
+    
+    // Create ISO strings safely avoiding timezone shifting bugs
+    const { format } = await import('date-fns')
+    const startStr = format(startDate, 'yyyy-MM-dd')
+    const endStr = format(endDate, 'yyyy-MM-dd')
+    const startIso = new Date(`${startStr}T${startTime}:00`).toISOString()
+    const endIso = new Date(`${endStr}T${endTime}:00`).toISOString()
+
+    const supabase = createClient()
+    const { data: overlappingEvents } = await supabase
+      .from('events')
+      .select('venue_id, status')
+      .lt('start_time', endIso)
+      .gt('end_time', startIso)
+
+    // Check overlaps
+    const newAvail: AvailabilityState = {}
+    
+    // Initialize all to AVAILABLE
+    venues.forEach(v => {
+      newAvail[v.id] = 'AVAILABLE'
+    })
+
+    if (overlappingEvents) {
+      overlappingEvents.forEach((event: { venue_id: string | null; status: string | null }) => {
+        if (!event.venue_id) return
+        
+        const pendingStatuses = ['PENDING_FACULTY_REVIEW', 'PENDING_HOD', 'PENDING_PRINCIPAL', 'PRINCIPAL_MEET_REQUESTED']
+        
+        if (event.status && pendingStatuses.includes(event.status)) {
+          // If already booked, don't overwrite with pending (booked takes precedence for overlapping events if multiple exist)
+          if (newAvail[event.venue_id] !== 'BOOKED') {
+            newAvail[event.venue_id] = 'PENDING'
+          }
+        } else if (event.status === 'APPROVED') {
+          newAvail[event.venue_id] = 'BOOKED'
+        }
+      })
+    }
+
+    setAvailability(newAvail)
+    setIsChecked(true)
+    setIsChecking(false)
+  }
+
+  const handleVenueClick = (svgId: string) => {
+    const venue = venues.find(v => v.svg_element_id === svgId)
+    if (venue) setSelectedVenue(venue)
+  }
+
+  const handleClosePanel = () => setSelectedVenue(null)
+
+  return (
+    <div className="flex flex-1 w-full pt-[88px] overflow-hidden bg-background min-h-0">
+      {/* Sidebar */}
+      <MapSidebar 
+        startDate={startDate}
+        setStartDate={handleDateChange(setStartDate, true)}
+        endDate={endDate}
+        setEndDate={handleDateChange(setEndDate)}
+        startTime={startTime}
+        setStartTime={handleTimeChange(setStartTime)}
+        endTime={endTime}
+        setEndTime={handleTimeChange(setEndTime)}
+        onCheck={handleCheckAvailability}
+        isChecking={isChecking}
+        hasChecked={isChecked}
+      />
+
+      {/* Main Map Area */}
+      <main className="flex-1 relative bg-black overflow-hidden flex items-center justify-center p-4 lg:p-8">
+        <CampusMap 
+          venues={venues} 
+          availability={availability} 
+          selectedVenueId={selectedVenue?.id || null}
+          onVenueClick={handleVenueClick}
+          hasChecked={isChecked}
+        />
+      </main>
+
+      {/* Slide-out Panel */}
+      <VenuePanel 
+        venue={selectedVenue} 
+        onClose={handleClosePanel} 
+        availability={selectedVenue ? availability[selectedVenue.id] : undefined}
+        hasChecked={isChecked}
+        startDate={startDate}
+        endDate={endDate}
+        startTime={startTime}
+        endTime={endTime}
+        onBookingSuccess={handleCheckAvailability}
+        isAdmin={isAdmin}
+      />
+    </div>
+  )
+}

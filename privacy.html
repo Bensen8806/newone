@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Privacy Policy for the NSSCE Event Management and Venue Booking System.">
+  <title>Privacy Policy — NSSCE Event Management System</title>
+  <link rel="icon" type="image/jpeg" href="favicon.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #7B1C1C;
+      --primary-dark: #5a1414;
+      --accent: #C9A84C;
+      --bg: #FAF8F5;
+      --surface: #ffffff;
+      --text: #1A1A1A;
+      --text-secondary: #4B5563;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    .nav { position: sticky; top: 0; z-index: 100; background: rgba(250,248,245,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 800px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary); text-decoration: none; }
+    .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.15s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .doc { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    .doc h1 { font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 800; color: var(--text); margin-bottom: 8px; letter-spacing: -0.3px; }
+    .doc-updated { font-size: 13px; color: var(--muted); margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+    .doc h2 { font-size: 18px; font-weight: 700; color: var(--text); margin: 36px 0 12px; }
+    .doc p { font-size: 15px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 16px; }
+    .doc ul { margin: 0 0 16px 20px; }
+    .doc li { font-size: 15px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 6px; }
+    .doc strong { color: var(--text); font-weight: 600; }
+    .doc a { color: var(--primary); text-decoration: none; }
+    .doc a:hover { text-decoration: underline; }
+
+    .footer { border-top: 1px solid var(--border); background: var(--surface); }
+    .footer-inner { max-width: 800px; margin: 0 auto; padding: 28px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .footer-text { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .footer-link:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html"><img src="logo.jpg" alt="NSS College of Engineering" style="height:32px;width:auto;display:block;"></a>
+      <a class="nav-back" href="index.html">
+        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to home
+      </a>
+    </div>
+  </nav>
+
+  <main class="doc">
+    <div class="doc-meta">Legal</div>
+    <h1>Privacy Policy</h1>
+    <div class="doc-updated">Last updated: 7 September 2026</div>
+
+    <h2>1. Overview</h2>
+    <p>This Privacy Policy describes how the NSSCE Event Management and Venue Booking System ("the System") collects, uses, and safeguards information submitted by users of NSS College of Engineering, Palakkad ("NSSCE"). By using the System, you agree to the practices described in this policy.</p>
+
+    <h2>2. Information We Collect</h2>
+    <p>The System collects the following information from users:</p>
+    <ul>
+      <li><strong>Account information:</strong> Name, institutional email address (restricted to @nssce.ac.in and @student.nssce.ac.in domains), department, and role.</li>
+      <li><strong>Event request data:</strong> Event title, description, venue selection, dates, expected attendance, club affiliation, and any special requirements entered during a booking request.</li>
+      <li><strong>Approval records:</strong> Remarks entered by HODs and the Principal during the approval process, along with timestamps of decisions.</li>
+      <li><strong>Attendance and registration data:</strong> Student registrations and attendance records for events.</li>
+    </ul>
+
+    <h2>3. How We Use Your Information</h2>
+    <p>Information collected is used exclusively for the following purposes:</p>
+    <ul>
+      <li>Processing and routing venue booking requests through the defined approval workflow.</li>
+      <li>Notifying relevant users (Club Heads, HODs, Principal) of pending actions or decisions.</li>
+      <li>Generating participation certificates and maintaining event records.</li>
+      <li>Ensuring venue conflict prevention by checking overlapping bookings.</li>
+      <li>Supporting KTU activity point tracking for eligible events.</li>
+    </ul>
+
+    <h2>4. Data Storage</h2>
+    <p>All data is stored in a secured PostgreSQL database hosted on Supabase with Row Level Security (RLS) enabled on all tables. Event data submitted during demo sessions may be stored in your browser's local storage and is not transmitted to any server unless the System is connected to a live backend.</p>
+
+    <h2>5. Data Sharing</h2>
+    <p>We do not sell, rent, or share your personal information with any third parties outside of NSSCE for commercial purposes. Information is accessible only to users with the appropriate role (e.g., an HOD can only see requests for venues within their department).</p>
+
+    <h2>6. Data Retention</h2>
+    <p>Event records and approval trails are retained for the duration of the academic year and archived thereafter in accordance with NSSCE's institutional record-keeping requirements. User account data is retained for the duration of your affiliation with NSSCE.</p>
+
+    <h2>7. Access and Correction</h2>
+    <p>You may request access to or correction of your personal data by contacting the System Administrator. Students and staff may also contact the college office for record-related queries.</p>
+
+    <h2>8. Security</h2>
+    <p>Access to the System is restricted to users with valid institutional email addresses. All data in transit is encrypted using TLS. Role-based access controls ensure that users can only perform actions permitted by their assigned role.</p>
+
+    <h2>9. Cookies</h2>
+    <p>The System uses session cookies strictly for maintaining login state. No tracking cookies or third-party advertising cookies are used.</p>
+
+    <h2>10. Changes to This Policy</h2>
+    <p>This policy may be updated periodically to reflect changes in the System. Significant changes will be communicated to users via the institutional notification system. Continued use of the System after changes constitutes acceptance of the revised policy.</p>
+
+    <h2>11. Contact</h2>
+    <p>For questions regarding this Privacy Policy, contact the NSSCE System Administrator or write to the college office at NSS College of Engineering, Akathethara, Palakkad, Kerala &mdash; 678 508.</p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-text">NSS College of Engineering, Palakkad &bull; APJ Abdul Kalam Technological University</div>
+      <div class="footer-links">
+        <a class="footer-link" href="privacy.html">Privacy Policy</a>
+        <a class="footer-link" href="terms.html">Terms &amp; Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
