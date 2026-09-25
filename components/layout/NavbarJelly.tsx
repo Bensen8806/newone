@@ -74,15 +74,13 @@ export default function NavbarJelly({ user, dashboardLink, showMap, clubLogo }: 
         )}
       </div>
 
-      <div className="fixed top-6 left-0 w-full z-50 flex justify-center pointer-events-none px-6">
-        <div className="pointer-events-auto">
-          <JellyRadio 
-            items={items}
-            value={activeValue}
-            onChange={(val) => router.push(val)}
-          />
-        </div>
+      <div className="pointer-events-auto">
+        <JellyRadio 
+          items={items}
+          value={activeValue}
+          onChange={(val) => router.push(val)}
+        />
       </div>
-    </>
+    </div>
   );
 }
