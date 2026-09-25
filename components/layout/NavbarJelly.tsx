@@ -38,6 +38,11 @@ export default function NavbarJelly({ user, dashboardLink, showMap, clubLogo }: 
     }
     
     items.push({
+      value: '/all-clubs',
+      label: 'Clubs'
+    });
+    
+    items.push({
       value: dashboardLink,
       label: 'Dashboard'
     });
@@ -52,6 +57,7 @@ export default function NavbarJelly({ user, dashboardLink, showMap, clubLogo }: 
   let activeValue = '/';
   if (pathname?.startsWith('/events')) activeValue = '/events';
   else if (pathname?.startsWith('/map')) activeValue = '/map';
+  else if (pathname?.startsWith('/all-clubs')) activeValue = '/all-clubs';
   else if (pathname?.startsWith('/login')) activeValue = '/login';
   else if (pathname !== '/') activeValue = dashboardLink;
 
