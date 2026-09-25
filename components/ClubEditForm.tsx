@@ -61,6 +61,11 @@ export default function ClubEditForm({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="logo_url">Logo URL</Label>
+            <Input id="logo_url" name="logo_url" defaultValue={club?.logo_url || ''} placeholder="https://example.com/logo.png" />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="email">Club Head Email</Label>
             <Input id="email" name="email" type="email" defaultValue={profile?.email || ''} required />
           </div>

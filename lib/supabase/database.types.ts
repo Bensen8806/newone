@@ -99,6 +99,7 @@ export type Database = {
           id: string
           name: string | null
           type: string | null
+          logo_url: string | null
         }
         Insert: {
           department_id?: string | null
@@ -107,6 +108,7 @@ export type Database = {
           id?: string
           name?: string | null
           type?: string | null
+          logo_url?: string | null
         }
         Update: {
           department_id?: string | null
@@ -115,6 +117,7 @@ export type Database = {
           id?: string
           name?: string | null
           type?: string | null
+          logo_url?: string | null
         }
         Relationships: [
           {
