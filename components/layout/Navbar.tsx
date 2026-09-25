@@ -30,5 +30,11 @@ export default async function Navbar() {
 
   const showMap = isAdmin || isPrincipal || isHod || isClubHead || isFacultyAdvisor
 
-  return <NavbarJelly user={user} dashboardLink={dashboardLink} showMap={showMap} />
+  let clubLogo = null
+  if (isClubHead && user) {
+    const { data: club } = await supabase.from('clubs').select('logo_url').eq('head_user_id', user.id).single()
+    clubLogo = club?.logo_url
+  }
+
+  return <NavbarJelly user={user} dashboardLink={dashboardLink} showMap={showMap} clubLogo={clubLogo} />
 }
