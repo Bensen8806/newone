@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import SpecularButton from "@/components/ui/SpecularButton"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -177,20 +178,22 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
             <div className="space-y-1.5">
               <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">KTU Activity Points?</Label>
               <div className="flex gap-2">
-                <Button 
-                  variant={ktuPoints ? "default" : "outline"}
+                <SpecularButton 
                   onClick={() => setKtuPoints(true)}
                   className="flex-1"
+                  baseColor={ktuPoints ? "#047857" : "#374151"}
+                  lineColor={ktuPoints ? "#10b981" : "#9ca3af"}
                 >
                   Yes
-                </Button>
-                <Button 
-                  variant={!ktuPoints ? "default" : "outline"}
+                </SpecularButton>
+                <SpecularButton 
                   onClick={() => setKtuPoints(false)}
                   className="flex-1"
+                  baseColor={!ktuPoints ? "#047857" : "#374151"}
+                  lineColor={!ktuPoints ? "#10b981" : "#9ca3af"}
                 >
                   No
-                </Button>
+                </SpecularButton>
               </div>
             </div>
           </div>
@@ -209,12 +212,21 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
         
         {/* Footer */}
         <div className="p-4 bg-muted/30 border-t flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
+          <SpecularButton 
+            onClick={onClose}
+            baseColor="#374151"
+            lineColor="#9ca3af"
+          >
             Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isPending} className={isAdmin ? "bg-amber-600 hover:bg-amber-700 text-white" : ""}>
+          </SpecularButton>
+          <SpecularButton 
+            onClick={handleSubmit} 
+            disabled={isPending}
+            baseColor={isAdmin ? "#b45309" : "#065f46"}
+            lineColor={isAdmin ? "#fbbf24" : "#10b981"}
+          >
             {isPending ? 'Submitting...' : isAdmin ? 'Instant Book ⚡' : 'Submit for Approval →'}
-          </Button>
+          </SpecularButton>
         </div>
       </DialogContent>
     </Dialog>

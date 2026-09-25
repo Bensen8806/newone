@@ -15,7 +15,8 @@ export const LAYOUT = {
     'venue-e-one': { x: 270, y: 135, w: 165, h: 85 },
     'venue-seminar-adm': { x: 450, y: 35, w: 165, h: 85 },
     'venue-cnc': { x: 450, y: 135, w: 165, h: 85 },
-    'venue-skill': { x: 630, y: 35, w: 350, h: 185 },
+    'venue-skill': { x: 630, y: 35, w: 170, h: 185 },
+    'venue-open-stage': { x: 810, y: 35, w: 170, h: 185 },
 
     // CS
     'venue-cse-seminar': { x: 20, y: 270, w: 290, h: 85 },
@@ -33,8 +34,9 @@ export const LAYOUT = {
     'venue-eee-power': { x: 840, y: 360, w: 140, h: 90 },
 
     // ME
-    'venue-me-seminar': { x: 20, y: 500, w: 290, h: 85 },
-    'venue-me-cad': { x: 20, y: 595, w: 290, h: 85 },
+    'venue-me-seminar': { x: 20, y: 500, w: 290, h: 55 },
+    'venue-me-cad': { x: 20, y: 565, w: 290, h: 55 },
+    'venue-me-heat': { x: 20, y: 630, w: 290, h: 50 },
 
     // IC
     'venue-ice-seminar': { x: 340, y: 500, w: 320, h: 85 },

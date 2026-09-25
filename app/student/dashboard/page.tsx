@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
-import GradientWaves from '@/components/ui/GradientWaves'
+import SpecularButton from '@/components/ui/SpecularButton'
+import Galaxy from '@/components/ui/Galaxy'
 import Link from 'next/link'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
@@ -28,27 +29,13 @@ export default async function StudentDashboard() {
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
       {/* Background Effect */}
       <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <GradientWaves
-          horizonColor="#fbbf24"
-          waveColor="#fcd34d"
-          crestColor="#d97706"
-          speed={0.4}
-          amplitude={2.5}
-          waveScale={0.6}
-          waveRatio={0.9}
-          swell={35}
-          turbulence={20}
-          tilt={1.11}
-          zoom={1.0}
-          height={5.5}
-          fogDepth={15}
-          detail="medium"
-          brightness={1.0}
-          opacity={1.0}
+        <Galaxy 
+          mouseRepulsion={true}
           mouseInteraction={true}
-          parallaxStrength={0.5}
-          grain={true}
-          grainIntensity={0.05}
+          density={0.15}
+          glowIntensity={0.5}
+          saturation={0.1}
+          hueShift={240}
         />
       </div>
 
@@ -120,9 +107,13 @@ export default async function StudentDashboard() {
                   You haven't participated in any events. Check out the main feed to discover upcoming campus activities.
                 </p>
                 <Link href="/events" className="mt-6">
-                  <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6">
+                  <SpecularButton 
+                    size="md"
+                    baseColor="#1f2937"
+                    lineColor="#eab308"
+                  >
                     Browse Events
-                  </Button>
+                  </SpecularButton>
                 </Link>
               </div>
             </BorderGlow>

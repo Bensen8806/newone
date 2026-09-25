@@ -1,4 +1,5 @@
 'use client';
+
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 import './Galaxy.css';
@@ -181,7 +182,7 @@ export default function Galaxy({
   focal = [0.5, 0.5],
   rotation = [1.0, 0.0],
   starSpeed = 0.5,
-  density = 0.4,
+  density = 1,
   hueShift = 140,
   disableAnimation = false,
   speed = 1.0,

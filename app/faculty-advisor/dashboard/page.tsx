@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { logout } from '@/app/actions/auth'
-import GradientWaves from '@/components/ui/GradientWaves'
+import Galaxy from '@/components/ui/Galaxy'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
 import PendingRequestsList from '@/components/PendingRequestsList'
@@ -29,7 +29,7 @@ export default async function FacultyAdvisorDashboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
       <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <GradientWaves horizonColor="#fbbf24" waveColor="#fcd34d" crestColor="#d97706" speed={0.4} amplitude={2.5} waveScale={0.6} waveRatio={0.9} swell={35} turbulence={20} tilt={1.11} zoom={1.0} height={5.5} fogDepth={15} detail="medium" brightness={1.0} opacity={1.0} mouseInteraction={true} parallaxStrength={0.5} grain={true} grainIntensity={0.05} />
+        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
       </div>
 
       <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">

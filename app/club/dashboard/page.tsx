@@ -2,9 +2,10 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import { logout } from '@/app/actions/auth'
 import CreatePostButton from '@/components/CreatePostButton'
-import GradientWaves from '@/components/ui/GradientWaves'
+import Galaxy from '@/components/ui/Galaxy'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
 import ClubEditForm from '@/components/ClubEditForm'
@@ -28,7 +29,7 @@ export default async function ClubDashboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
       <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <GradientWaves horizonColor="#fbbf24" waveColor="#fcd34d" crestColor="#d97706" speed={0.4} amplitude={2.5} waveScale={0.6} waveRatio={0.9} swell={35} turbulence={20} tilt={1.11} zoom={1.0} height={5.5} fogDepth={15} detail="medium" brightness={1.0} opacity={1.0} mouseInteraction={true} parallaxStrength={0.5} grain={true} grainIntensity={0.05} />
+        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
       </div>
 
       <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
@@ -38,8 +39,24 @@ export default async function ClubDashboard() {
             <p className="text-muted-foreground mt-2 text-lg">Manage your club events and details.</p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Link href="/club/new-event"><Button className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">Request Venue</Button></Link>
-            <Link href="/map"><Button variant="secondary" className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">View Map</Button></Link>
+            <Link href="/club/new-event">
+              <SpecularButton 
+                size="md"
+                baseColor="#1f2937"
+                lineColor="#10b981"
+              >
+                Request Venue
+              </SpecularButton>
+            </Link>
+            <Link href="/map">
+              <SpecularButton 
+                size="md"
+                baseColor="#1f2937"
+                lineColor="#9ca3af"
+              >
+                View Map
+              </SpecularButton>
+            </Link>
             <form action={logout}>
               <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
             </form>

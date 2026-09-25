@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator"
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button, buttonVariants } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import { cn } from '@/lib/utils'
 import BorderGlow from '@/components/ui/BorderGlow'
 
@@ -51,31 +52,29 @@ export default function MapSidebar({
   hasChecked
 }: MapSidebarProps) {
   return (
-    <aside className="w-72 sm:w-80 flex-shrink-0 border-r bg-muted/30 flex flex-col h-full overflow-y-auto">
-      <div className="p-4 flex flex-col gap-4">
+    <aside className="w-72 sm:w-80 flex-shrink-0 border-r border-white/10 bg-black/20 backdrop-blur-xl flex flex-col h-full overflow-y-auto overflow-x-hidden scrollbar-hide z-10">
+      <div className="p-5 flex flex-col gap-6">
         
         {/* Time Slot Selection */}
-        <BorderGlow className="rounded-xl shadow-lg border bg-card" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+        <BorderGlow className="rounded-xl shadow-xl border border-white/5 bg-black/40" borderRadius={12}>
+          <CardHeader className="pb-4 pt-5 px-5">
+            <CardTitle className="text-sm font-semibold tracking-wide">
               Select Time Slot
             </CardTitle>
-            <CardDescription>Choose when you need a venue.</CardDescription>
+            <CardDescription className="text-xs mt-1">Choose when you need a venue.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-2">
-                <Label className="text-xs">Start Date</Label>
+          <CardContent className="space-y-5 px-5 pb-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2.5">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Start Date</Label>
                 <Popover>
                   <PopoverTrigger className={buttonVariants({ variant: "outline", className: cn(
-                      "w-full justify-start text-left font-normal px-2",
+                      "w-full justify-center text-center font-medium px-3 h-10 text-sm bg-black/40 border-white/10 hover:bg-white/5",
                       !startDate && "text-muted-foreground"
                     )})}>
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="truncate">{startDate ? format(startDate, "MMM d, yyyy") : "Pick"}</span>
+                    <span className="truncate">{startDate ? format(startDate, "MMM d, yyyy") : "Select"}</span>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 border-white/10 bg-black/90 backdrop-blur-xl" align="start">
                     <Calendar
                       mode="single"
                       selected={startDate}
@@ -85,17 +84,16 @@ export default function MapSidebar({
                 </Popover>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-xs">End Date</Label>
+              <div className="space-y-2.5">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">End Date</Label>
                 <Popover>
                   <PopoverTrigger className={buttonVariants({ variant: "outline", className: cn(
-                      "w-full justify-start text-left font-normal px-2",
+                      "w-full justify-center text-center font-medium px-3 h-10 text-sm bg-black/40 border-white/10 hover:bg-white/5",
                       !endDate && "text-muted-foreground"
                     )})}>
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="truncate">{endDate ? format(endDate, "MMM d, yyyy") : "Pick"}</span>
+                    <span className="truncate">{endDate ? format(endDate, "MMM d, yyyy") : "Select"}</span>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 border-white/10 bg-black/90 backdrop-blur-xl" align="start">
                     <Calendar
                       mode="single"
                       selected={endDate}
@@ -106,26 +104,24 @@ export default function MapSidebar({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-2">
-                <Label className="text-xs">Start Time</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2.5">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Start Time</Label>
                 <div className="relative">
-                  <Clock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
-                    className="pl-8 px-2" 
+                    className="px-3 text-center h-10 text-sm font-medium bg-black/40 border-white/10 focus-visible:ring-1 focus-visible:ring-primary/50" 
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs">End Time</Label>
+              <div className="space-y-2.5">
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">End Time</Label>
                 <div className="relative">
-                  <Clock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
-                    className="pl-8 px-2" 
+                    className="px-3 text-center h-10 text-sm font-medium bg-black/40 border-white/10 focus-visible:ring-1 focus-visible:ring-primary/50" 
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                   />
@@ -133,25 +129,28 @@ export default function MapSidebar({
               </div>
             </div>
 
-            <Button 
-              className="w-full mt-2 font-semibold" 
-              onClick={onCheck}
-              disabled={isChecking}
-            >
-              {isChecking ? 'Checking...' : 'Check Availability'}
-            </Button>
+            <div className="mt-6 w-full flex justify-center">
+              <SpecularButton 
+                className="w-full font-semibold text-sm h-10" 
+                onClick={onCheck}
+                disabled={isChecking}
+                baseColor="#18181b"
+                lineColor="#60a5fa"
+              >
+                {isChecking ? 'Checking...' : 'Check Availability'}
+              </SpecularButton>
+            </div>
           </CardContent>
         </BorderGlow>
 
         {/* Legend */}
-        <BorderGlow className="rounded-xl shadow-lg border bg-card" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Layers className="h-4 w-4 text-muted-foreground" />
+        <BorderGlow className="rounded-xl shadow-xl border border-white/5 bg-black/40" borderRadius={12}>
+          <CardHeader className="pb-4 pt-5 px-5">
+            <CardTitle className="text-sm font-semibold tracking-wide">
               Legend
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4 px-5 pb-6">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="w-3 h-3 rounded-sm bg-green-500/20 border-2 border-green-600 flex-shrink-0" />
               <span>Available</span>

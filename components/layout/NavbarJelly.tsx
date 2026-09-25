@@ -55,21 +55,22 @@ export default function NavbarJelly({ user, dashboardLink, showMap }: NavbarJell
   else if (pathname !== '/') activeValue = dashboardLink;
 
   return (
-    <div className="fixed top-6 left-0 w-full z-50 flex justify-center pointer-events-none px-6">
-      {/* Top Left NSSCE Logo */}
-      <div className="absolute left-6 top-0 pointer-events-auto flex items-center h-full">
+    <>
+      <div className="absolute top-6 left-8 z-50 pointer-events-auto flex items-center h-[44px]">
         <Link href="/">
           <Image src="/logo-new.png" alt="NSSCE Logo" width={110} height={28} className="object-contain drop-shadow-md hover:scale-105 transition-transform opacity-90 hover:opacity-100" priority />
         </Link>
       </div>
 
-      <div className="pointer-events-auto">
-        <JellyRadio 
-          items={items}
-          value={activeValue}
-          onChange={(val) => router.push(val)}
-        />
+      <div className="fixed top-6 left-0 w-full z-50 flex justify-center pointer-events-none px-6">
+        <div className="pointer-events-auto">
+          <JellyRadio 
+            items={items}
+            value={activeValue}
+            onChange={(val) => router.push(val)}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

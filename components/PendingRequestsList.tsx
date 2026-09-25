@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { EventWithDetails } from '@/lib/types'
 import { processEventAction } from '@/app/actions/events'
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import LetterFormatModal from './LetterFormatModal'
 import BorderGlow from '@/components/ui/BorderGlow'
 
@@ -43,7 +44,7 @@ export default function PendingRequestsList({ events, role, roleCode }: PendingR
     <>
       <div className="grid grid-cols-1 gap-6">
         {events.map((event) => (
-          <BorderGlow key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-4" backgroundColor="transparent" glowColor="270 100 70">
+          <BorderGlow key={event.id} className="bg-transparent hover:bg-white/5 backdrop-blur-sm transition-colors p-6 rounded-lg shadow-sm border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" backgroundColor="transparent" glowColor="270 100 70">
             <div>
               <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
               <p className="text-sm text-muted-foreground">Club: {event.clubs?.name}</p>
@@ -51,26 +52,34 @@ export default function PendingRequestsList({ events, role, roleCode }: PendingR
               <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString('en-GB')}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button 
-                variant="outline" 
+              <SpecularButton 
+                size="sm"
                 onClick={() => openLetterView(event)}
+                baseColor="#1f2937"
+                lineColor="#9ca3af"
               >
                 More Details
-              </Button>
-              <Button 
-                variant="destructive"
+              </SpecularButton>
+              <SpecularButton 
+                size="sm"
                 disabled={isPending && processingId === event.id}
                 onClick={() => handleAction(event.id, 'REJECT')}
+                baseColor="#7f1d1d"
+                lineColor="#ef4444"
+                textColor="#fecaca"
               >
                 {isPending && processingId === event.id ? 'Processing...' : 'Reject'}
-              </Button>
-              <Button 
-                variant="default"
+              </SpecularButton>
+              <SpecularButton 
+                size="sm"
                 disabled={isPending && processingId === event.id}
                 onClick={() => handleAction(event.id, 'APPROVE')}
+                baseColor="#065f46"
+                lineColor="#10b981"
+                textColor="#d1fae5"
               >
                 {isPending && processingId === event.id ? 'Processing...' : 'Approve'}
-              </Button>
+              </SpecularButton>
             </div>
           </BorderGlow>
         ))}

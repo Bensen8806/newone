@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { approveRoleRequest, rejectRoleRequest } from '@/app/actions/admin'
 import { Button } from '@/components/ui/button'
-import GradientWaves from '@/components/ui/GradientWaves'
+import SpecularButton from '@/components/ui/SpecularButton'
+import Galaxy from '@/components/ui/Galaxy'
 import TextType from '@/components/ui/TextType'
 import BorderGlow from '@/components/ui/BorderGlow'
 import Link from 'next/link'
@@ -41,7 +42,7 @@ export default async function AdminDashboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
       <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <GradientWaves horizonColor="#fbbf24" waveColor="#fcd34d" crestColor="#d97706" speed={0.4} amplitude={2.5} waveScale={0.6} waveRatio={0.9} swell={35} turbulence={20} tilt={1.11} zoom={1.0} height={5.5} fogDepth={15} detail="medium" brightness={1.0} opacity={1.0} mouseInteraction={true} parallaxStrength={0.5} grain={true} grainIntensity={0.05} />
+        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
       </div>
 
       <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
@@ -52,7 +53,13 @@ export default async function AdminDashboard() {
           </div>
           <div className="flex gap-3 flex-wrap">
             <Link href="/map">
-              <Button className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">Book Venue</Button>
+              <SpecularButton 
+                size="md"
+                baseColor="#1f2937"
+                lineColor="#3b82f6"
+              >
+                Book Venue
+              </SpecularButton>
             </Link>
             <form action={logout}>
               <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
@@ -97,10 +104,26 @@ export default async function AdminDashboard() {
                       </div>
                       <div className="flex gap-2">
                         <form action={approveRoleRequest.bind(null, req.id, req.requested_role)}>
-                          <Button type="submit" className="rounded-full">Approve</Button>
+                          <SpecularButton 
+                            type="submit"
+                            size="sm"
+                            baseColor="#065f46"
+                            lineColor="#10b981"
+                            textColor="#d1fae5"
+                          >
+                            Approve
+                          </SpecularButton>
                         </form>
                         <form action={rejectRoleRequest.bind(null, req.id)}>
-                          <Button type="submit" variant="outline" className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20">Reject</Button>
+                          <SpecularButton 
+                            type="submit"
+                            size="sm"
+                            baseColor="#7f1d1d"
+                            lineColor="#ef4444"
+                            textColor="#fecaca"
+                          >
+                            Reject
+                          </SpecularButton>
                         </form>
                       </div>
                     </div>

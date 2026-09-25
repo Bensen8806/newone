@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import SpecularButton from '@/components/ui/SpecularButton'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,7 +44,14 @@ export default function ClubEditForm({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="rounded-full mt-4 border-white/20 hover:bg-white/10 dark:text-white">Edit Club Details</Button>
+        <SpecularButton 
+          size="md"
+          className="mt-4"
+          baseColor="#374151"
+          lineColor="#9ca3af"
+        >
+          Edit Club Details
+        </SpecularButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-background">
         <DialogHeader>
@@ -96,9 +104,14 @@ export default function ClubEditForm({
           </div>
 
           <div className="pt-4 flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
+            <SpecularButton 
+              type="submit" 
+              disabled={isSubmitting}
+              baseColor="#065f46"
+              lineColor="#10b981"
+            >
               {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </Button>
+            </SpecularButton>
           </div>
         </form>
       </DialogContent>
