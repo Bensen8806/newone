@@ -3,11 +3,11 @@ import { createWorkersResponseStoreServiceBindingConfig } from "@vinext/cloudfla
 
 const responseStore = await createWorkersResponseStoreServiceBindingConfig({
   worker: {
-    name: "nssce-event-calendar-response-store",
+    name: "newone-response-store",
     compatibilityDate: "2026-09-30",
     compatibilityFlags: ["nodejs_compat"],
   },
-  bucket: "nssce-event-calendar-response-store-cache-bodies",
+  bucket: "newone-response-store-cache-bodies",
 });
 
 export const responseStoreServiceBinding = responseStore.serviceBindingWorker;
@@ -15,7 +15,7 @@ export const responseStoreServiceBinding = responseStore.serviceBindingWorker;
 export default defineConfig({
   worker: defineWorker({
     ...responseStore.applicationWorker,
-    name: "nssce-event-calendar",
+    name: "newone",
     entrypoint: "vinext/server/fetch-handler",
     compatibilityDate: "2026-09-30",
     compatibilityFlags: ["nodejs_compat"],
