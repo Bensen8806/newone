@@ -1,16 +1,14 @@
 import { defineConfig } from "vite";
 import vinext from "vinext";
 import { cloudflare } from "@cloudflare/vite-plugin";
-import { responseStoreServiceBinding } from "./cloudflare.config";
-import { responseStoreAdapter } from "@vinext/cloudflare/cache/response-store-adapter";
+import { workersCacheCdnAdapter } from "@vinext/cloudflare/cache/workers-cache-cdn-adapter";
 
 export default defineConfig({
   plugins: [
     vinext({
-      cache: responseStoreAdapter(),
+      cache: { cdn: workersCacheCdnAdapter() },
     }),
     cloudflare({
-      auxiliaryWorkers: [{ config: responseStoreServiceBinding }],
       viteEnvironment: {
         name: "rsc",
         childEnvironments: ["ssr"],
