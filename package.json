@@ -11,7 +11,7 @@
     "build:vinext": "vite build",
     "start:vinext": "vite preview",
     "deploy:vinext": "vinext-cloudflare deploy",
-    "deploy:response-store": "cf deploy --prebuilt --mode production --worker nssce-event-calendar-response-store"
+    "deploy:response-store": "cf deploy --prebuilt --mode production --worker newone-response-store"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
