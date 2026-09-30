@@ -15,21 +15,33 @@ export default function ScrollVideo() {
 
     const loadZip = async () => {
       try {
-        console.log("Fetching highly optimized video-frames.zip...")
-        const response = await fetch('/video-frames.zip')
-        const blob = await response.blob()
+        console.log("Fetching highly optimized video-frames parts...")
+        const [response1, response2] = await Promise.all([
+          fetch('/video-frames-1.zip'),
+          fetch('/video-frames-2.zip')
+        ]);
+        
+        const blob1 = await response1.blob()
+        const blob2 = await response2.blob()
 
         console.log("Unzipping frames into RAM...")
-        const zip = await JSZip.loadAsync(blob)
+        const [zip1, zip2] = await Promise.all([
+          JSZip.loadAsync(blob1),
+          JSZip.loadAsync(blob2)
+        ]);
 
-        // Ensure filenames are sorted (e.g., frame_0001.jpg, frame_0002.jpg)
-        const files = Object.keys(zip.files).filter(f => f.endsWith('.jpg')).sort()
+        const files1 = Object.keys(zip1.files).filter(f => f.endsWith('.jpg'))
+        const files2 = Object.keys(zip2.files).filter(f => f.endsWith('.jpg'))
+        
+        // Ensure filenames are sorted properly (e.g. frame_0001.jpg, frame_0002.jpg)
+        const files = [...files1.map(f => ({ filename: f, zip: zip1 })), ...files2.map(f => ({ filename: f, zip: zip2 }))]
+          .sort((a, b) => a.filename.localeCompare(b.filename));
 
         let loadedCount = 0;
 
         for (let i = 0; i < files.length; i++) {
           if (isCancelled) return;
-          const filename = files[i];
+          const { filename, zip } = files[i];
           const fileData = await zip.files[filename].async("blob");
           const url = URL.createObjectURL(fileData);
 
@@ -49,7 +61,7 @@ export default function ScrollVideo() {
           }
         }
       } catch (e) {
-        console.error("Failed to load video zip", e)
+        console.error("Failed to load video zip parts", e)
       }
     }
 
