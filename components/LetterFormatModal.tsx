@@ -30,7 +30,7 @@ export default function LetterFormatModal({ isOpen, onClose, event, role }: Lett
 
   const startTime = format(startDate, 'hh:mm a')
   const endTime = format(endDate, 'hh:mm a')
-  const requestedDate = format(new Date(event.created_at), 'dd MMM yyyy')
+  const requestedDate = format(new Date(event.created_at || new Date()), 'dd MMM yyyy')
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>

@@ -130,7 +130,7 @@ export default function MapPage() {
       />
 
       {/* Main Map Area */}
-      <main className="flex-1 relative bg-black overflow-hidden flex items-center justify-center p-4 lg:p-8">
+      <main className="flex-1 relative bg-transparent overflow-hidden flex items-center justify-center p-4 lg:p-8">
         <CampusMap 
           venues={venues} 
           availability={availability} 

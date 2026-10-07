@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import SpecularButton from "@/components/ui/SpecularButton"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -47,9 +46,6 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
 
   if (!venue) return null
 
-  // A helper function to get department colors. Using primary for now.
-  const deptColor = "bg-primary"
-  
   const formattedDate = startDate && endDate 
     ? (startDate.getTime() === endDate.getTime() 
         ? format(startDate, 'dd MMM yyyy') 
@@ -89,121 +85,127 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden bg-[#0A0A0A] border-white/10">
         
         {/* Header */}
-        <div className={`${deptColor} p-5 pb-6 text-primary-foreground relative`}>
-          <DialogTitle className="text-xl font-bold mb-1">
-            {isAdmin ? "Instant Book Venue ⚡" : "New Venue Request"}
+        <div className={`p-5 pb-6 border-b border-white/10 relative ${isAdmin ? 'bg-amber-500/10' : 'bg-white/[0.02]'}`}>
+          <DialogTitle className="text-lg font-semibold mb-1 flex items-center gap-2 text-white">
+            {isAdmin ? (
+              <>Instant Book Venue</>
+            ) : (
+              "New Venue Request"
+            )}
           </DialogTitle>
-          <div className="text-sm opacity-90">
+          <div className="text-xs text-white/50 flex items-center gap-1.5 mt-2">
             {isAdmin ? `Admin Booking: ${venue.name}` : `Requesting: ${venue.name}`}
           </div>
         </div>
         
         {/* Form Body */}
-        <div className="p-6 space-y-5 h-[65vh] overflow-y-auto">
+        <div className="p-6 space-y-6 h-[65vh] overflow-y-auto custom-scrollbar">
           
           {/* Readonly Info Box */}
-          <div className="flex bg-muted/50 border rounded-md p-4 gap-6">
-            <div>
-              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Venue</div>
-              <div className="text-sm font-semibold">{venue.name}</div>
+          <div className="flex bg-[#111] border border-white/5 rounded-lg p-4 gap-6">
+            <div className="flex-1">
+              <div className="text-[10px] text-white/40 font-semibold uppercase tracking-widest mb-1.5 flex items-center gap-1">Venue</div>
+              <div className="text-sm font-medium text-white/90">{venue.name}</div>
             </div>
-            <div>
-              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Date</div>
-              <div className="text-sm font-semibold">{formattedDate}</div>
+            <div className="flex-1">
+              <div className="text-[10px] text-white/40 font-semibold uppercase tracking-widest mb-1.5 flex items-center gap-1">Date</div>
+              <div className="text-sm font-medium text-white/90">{formattedDate}</div>
             </div>
-            <div>
-              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Time</div>
-              <div className="text-sm font-semibold">{timeRange}</div>
+            <div className="flex-1">
+              <div className="text-[10px] text-white/40 font-semibold uppercase tracking-widest mb-1.5 flex items-center gap-1">Time</div>
+              <div className="text-sm font-medium text-white/90">{timeRange}</div>
             </div>
           </div>
 
           {/* Event Title */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Event Title *</Label>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Event Title *</Label>
             <Input 
               placeholder="e.g., IEEE Workshop on ML" 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="bg-[#111] border-white/10 text-white placeholder:text-white/20 focus-visible:ring-1 focus-visible:ring-white/30"
             />
           </div>
 
           {/* Description */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Description *</Label>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Description *</Label>
             <Textarea 
               placeholder="Objectives, expected outcomes..." 
-              className="min-h-[100px] resize-none" 
+              className="min-h-[100px] resize-none bg-[#111] border-white/10 text-white placeholder:text-white/20 focus-visible:ring-1 focus-visible:ring-white/30" 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           {/* Two Columns */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5 flex flex-col justify-center">
-              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Organizing Club *</Label>
-              <div className="text-sm px-3 py-2 border rounded-md bg-muted/50 text-muted-foreground">
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2 flex flex-col justify-center">
+              <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Organizing Club *</Label>
+              <div className="text-sm px-3 py-2.5 border border-white/5 rounded-md bg-[#111] text-white/50">
                 Assigned based on login
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Category *</Label>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Category *</Label>
               <Select value={category} onValueChange={(val) => setCategory(val as string)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-[#111] border-white/10 text-white focus:ring-1 focus:ring-white/30">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TECHNICAL">Technical</SelectItem>
-                  <SelectItem value="CULTURAL">Cultural</SelectItem>
-                  <SelectItem value="SPORTS">Sports</SelectItem>
+                <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
+                  <SelectItem value="TECHNICAL" className="focus:bg-white/10 focus:text-white">Technical</SelectItem>
+                  <SelectItem value="CULTURAL" className="focus:bg-white/10 focus:text-white">Cultural</SelectItem>
+                  <SelectItem value="SPORTS" className="focus:bg-white/10 focus:text-white">Sports</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           {/* Two Columns */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Expected Attendance *</Label>
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Expected Attendance *</Label>
               <Input 
                 type="number" 
                 placeholder="No. of attendees" 
                 value={expectedAttendance}
                 onChange={(e) => setExpectedAttendance(e.target.value)}
+                className="bg-[#111] border-white/10 text-white placeholder:text-white/20 focus-visible:ring-1 focus-visible:ring-white/30"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">KTU Activity Points?</Label>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">KTU Activity Points?</Label>
               <div className="flex gap-2">
-                <SpecularButton 
+                <Button 
+                  type="button"
                   onClick={() => setKtuPoints(true)}
-                  className="flex-1"
-                  baseColor={ktuPoints ? "#047857" : "#374151"}
-                  lineColor={ktuPoints ? "#10b981" : "#9ca3af"}
+                  variant={ktuPoints ? "default" : "outline"}
+                  className={`flex-1 h-10 text-xs transition-colors ${ktuPoints ? 'bg-white text-black hover:bg-white/90' : 'bg-transparent border-white/10 text-white/60 hover:text-white hover:bg-white/5'}`}
                 >
                   Yes
-                </SpecularButton>
-                <SpecularButton 
+                </Button>
+                <Button 
+                  type="button"
                   onClick={() => setKtuPoints(false)}
-                  className="flex-1"
-                  baseColor={!ktuPoints ? "#047857" : "#374151"}
-                  lineColor={!ktuPoints ? "#10b981" : "#9ca3af"}
+                  variant={!ktuPoints ? "default" : "outline"}
+                  className={`flex-1 h-10 text-xs transition-colors ${!ktuPoints ? 'bg-white text-black hover:bg-white/90' : 'bg-transparent border-white/10 text-white/60 hover:text-white hover:bg-white/5'}`}
                 >
                   No
-                </SpecularButton>
+                </Button>
               </div>
             </div>
           </div>
 
           {/* Special Requirements */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Special Requirements</Label>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">Special Requirements</Label>
             <Textarea 
               placeholder="Equipment, setup, external speakers..." 
-              className="min-h-[80px] resize-none" 
+              className="min-h-[80px] resize-none bg-[#111] border-white/10 text-white placeholder:text-white/20 focus-visible:ring-1 focus-visible:ring-white/30" 
               value={specialRequirements}
               onChange={(e) => setSpecialRequirements(e.target.value)}
             />
@@ -211,22 +213,21 @@ export default function RequestModal({ isOpen, onClose, venue, startDate, endDat
         </div>
         
         {/* Footer */}
-        <div className="p-4 bg-muted/30 border-t flex justify-end gap-3">
-          <SpecularButton 
+        <div className="p-4 bg-[#0A0A0A] border-t border-white/10 flex justify-end gap-3">
+          <Button 
+            variant="outline"
             onClick={onClose}
-            baseColor="#374151"
-            lineColor="#9ca3af"
+            className="h-9 px-4 text-xs font-medium border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
             Cancel
-          </SpecularButton>
-          <SpecularButton 
+          </Button>
+          <Button 
             onClick={handleSubmit} 
             disabled={isPending}
-            baseColor={isAdmin ? "#b45309" : "#065f46"}
-            lineColor={isAdmin ? "#fbbf24" : "#10b981"}
+            className={`h-9 px-4 text-xs font-medium transition-colors ${isAdmin ? 'bg-amber-500 hover:bg-amber-600 text-amber-950' : 'bg-white hover:bg-white/90 text-black'}`}
           >
-            {isPending ? 'Submitting...' : isAdmin ? 'Instant Book ⚡' : 'Submit for Approval →'}
-          </SpecularButton>
+            {isPending ? 'Submitting...' : isAdmin ? 'Instant Book' : 'Submit for Approval'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

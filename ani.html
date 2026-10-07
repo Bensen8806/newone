@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated System Architecture</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #030406; 
+            --ink: #ffffff; 
+            --ink-muted: rgba(255, 255, 255, 0.4);
+            --ink-faint: rgba(255, 255, 255, 0.15);
+            --accent: #ff2a00; 
+            --accent-glow: rgba(255, 42, 0, 0.6);
+            --grid-major: rgba(255, 255, 255, 0.08);
+            --grid-minor: rgba(255, 255, 255, 0.03);
+            --electricity: #ff4d00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .scroll-container {
+            height: 1200vh; 
+            width: 100%;
+        }
+
+        .fixed-viewport {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+            background-size: 12px 12px, 12px 12px, 60px 60px, 60px 60px;
+            background-position: center center;
+            z-index: 0;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 10%, rgba(3,4,6,0.98) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        svg#world {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Percentage Widget */
+        .percentage-widget {
+            position: absolute;
+            bottom: 32px;
+            right: 32px;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-container"></div>
+
+    <div class="fixed-viewport">
+        <div class="bg-grid"></div>
+        <div class="vignette"></div>
+
+        <div class="ui-layer">
+            <div class="percentage-widget">
+                <svg id="percent-svg" width="100%" height="100%" viewBox="0 0 100 100">
+                    <g id="ui-gear-spin">
+                        <path id="ui-gear-path" fill="rgba(3,4,6,0.85)" stroke="var(--accent)" stroke-width="2" />
+                    </g>
+                    <!-- ONLY text allowed in the entire UI layer -->
+                    <text id="ui-percent" x="50" y="52" text-anchor="middle" dominant-baseline="middle" font-family="Inter, sans-serif" font-size="16" font-weight="900" fill="var(--ink)">0%</text>
+                </svg>
+            </div>
+        </div>
+
+        <svg id="world" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <filter id="pulse-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+                <clipPath id="ticket-clip">
+                    <rect x="180" y="632" width="140" height="100" />
+                </clipPath>
+            </defs>
+            
+            <g id="camera-rig">
+                
+                <!-- ==========================================
+                     0. CENTRAL BUS / PCB ROUTING TRACES
+                     ========================================== -->
+                <g id="system-bus" stroke="var(--ink-faint)" stroke-width="2" fill="none" class="drawable early">
+                    <!-- Base Core Perimeter -->
+                    <rect x="760" y="340" width="400" height="400" stroke-width="1" stroke-dasharray="4 8" />
+                    
+                    <!-- PCB Traces running completely to the exact center core -->
+                    <path d="M 960 280 L 960 540 
+                             M 450 300 L 550 300 L 600 350 L 760 350 L 960 540 
+                             M 320 540 L 960 540 
+                             M 450 780 L 550 780 L 600 730 L 760 730 L 960 540 
+                             M 960 800 L 960 540 
+                             M 1470 780 L 1370 780 L 1320 730 L 1160 730 L 960 540 
+                             M 1470 540 L 960 540 
+                             M 1470 300 L 1370 300 L 1320 350 L 1160 350 L 960 540" 
+                          stroke="var(--ink-muted)" stroke-width="2" stroke-linejoin="round" />
+
+                    <!-- Glowing Data Pulses running continuously to the center -->
+                    <g id="data-flows" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-dasharray="15 150" opacity="0.9" filter="url(#pulse-glow)" stroke-linejoin="round">
+                        <path d="M 960 280 L 960 540" />
+                        <path d="M 450 300 L 550 300 L 600 350 L 760 350 L 960 540" />
+                        <path d="M 320 540 L 960 540" />
+                        <path d="M 450 780 L 550 780 L 600 730 L 760 730 L 960 540" />
+                        <path d="M 960 800 L 960 540" />
+                        <path d="M 1470 780 L 1370 780 L 1320 730 L 1160 730 L 960 540" />
+                        <path d="M 1470 540 L 960 540" />
+                        <path d="M 1470 300 L 1370 300 L 1320 350 L 1160 350 L 960 540" />
+                    </g>
+                </g>
+
+                <!-- ==========================================
+                     1. NODE: POWER & ELECTRICITY (Top Center)
+                     ========================================== -->
+                <g id="node-power" fill="none" stroke="var(--ink)" class="drawable late">
+                    <circle cx="860" cy="200" r="70" stroke-width="2" stroke-dasharray="2 4" />
+                    <g id="eee-rotor">
+                        <circle cx="860" cy="200" r="45" stroke-width="3" />
+                        <path d="M 860 200 L 860 155 M 860 200 L 821 222 M 860 200 L 899 222" stroke="var(--ink-muted)" stroke-width="6" />
+                    </g>
+                    <rect x="980" y="150" width="80" height="100" stroke-width="3" />
+                    <rect x="990" y="160" width="60" height="80" stroke-width="1" />
+                    <path d="M 980 160 L 960 160 L 960 240 L 980 240" stroke="var(--ink-muted)" stroke-width="3" />
+                    <path d="M 1060 170 L 1080 170 L 1080 230 L 1060 230" stroke="var(--ink-muted)" stroke-width="2" />
+                    <g id="electricity-arcs" stroke="var(--electricity)" stroke-width="2" stroke-linejoin="round">
+                        <path id="arc1" d="M 905 180 L 920 160 L 940 190 L 960 170 L 980 180" />
+                        <path id="arc2" d="M 905 220 L 925 240 L 935 210 L 960 230 L 980 220" />
+                        <path id="arc3" d="M 905 200 L 930 205 L 945 195 L 960 205 L 980 200" />
+                    </g>
+                </g>
+
+                <!-- ==========================================
+                     2. NODE: KINEMATICS & GEARS (Top Left)
+                     ========================================== -->
+                <g id="node-mech" fill="none" stroke="var(--ink)" class="drawable late">
+                    <path id="mech-gear1" stroke-width="2" />
+                    <path id="mech-gear2" stroke-width="2" />
+                    <circle cx="210" cy="300" r="10" stroke-width="2" fill="var(--bg)" />
+                    <circle cx="290" cy="300" r="10" stroke-width="2" fill="var(--bg)" />
+                    <g id="mech-kinematics">
+                        <line id="mech-crank" x1="290" y1="300" x2="290" y2="260" stroke="var(--accent)" stroke-width="4" />
+                        <circle id="mech-crank-pin" cx="290" cy="260" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                        <line id="mech-rod" x1="290" y1="260" x2="410" y2="300" stroke="var(--ink)" stroke-width="3" />
+                        <rect x="400" y="275" width="80" height="50" stroke-width="2" />
+                        <rect id="mech-piston" x="400" y="280" width="20" height="40" fill="var(--ink)" stroke="none" />
+                        <line x1="480" y1="290" x2="520" y2="290" stroke="var(--ink-faint)" stroke-width="2" />
+                        <line x1="480" y1="310" x2="520" y2="310" stroke="var(--ink-faint)" stroke-width="2" />
+                    </g>
+                </g>
+
+                <!-- ==========================================
+                     3. NODE: EVENT PLOTTER (Mid Left)
+                     ========================================== -->
+                <g id="node-events" fill="none" stroke="var(--ink)" class="drawable late">
+                    <rect x="180" y="440" width="140" height="160" stroke-width="2" />
+                    <line x1="180" y1="460" x2="320" y2="460" stroke="var(--ink-faint)" stroke-width="1" />
+                    <line x1="180" y1="580" x2="320" y2="580" stroke="var(--ink-faint)" stroke-width="1" />
+                    <g id="event-poster-art">
+                        <path d="M 200 480 L 250 560 L 300 480 Z" stroke="var(--accent)" stroke-width="2" />
+                        <rect x="225" y="495" width="50" height="50" stroke="var(--ink-muted)" stroke-width="1" />
+                    </g>
+                    <line id="plotter-rail-y" x1="160" y1="520" x2="340" y2="520" stroke="var(--ink-muted)" stroke-width="4" />
+                    <rect id="plotter-head" x="240" y="510" width="20" height="20" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                    <circle id="plotter-laser" cx="250" cy="520" r="3" fill="var(--accent)" stroke="none" />
+                    <rect x="180" y="620" width="140" height="12" stroke-width="2" fill="var(--bg)" />
+                    <g clip-path="url(#ticket-clip)">
+                        <rect id="event-ticket" x="200" y="632" width="100" height="10" fill="var(--bg)" stroke="var(--ink-muted)" stroke-width="1.5" stroke-dasharray="4 4" />
+                    </g>
+                </g>
+
+                <!-- ==========================================
+                     4. NODE: STRUCTURAL MATRIX (Bottom Left)
+                     ========================================== -->
+                <g id="node-civil" fill="none" stroke="var(--ink)" stroke-width="2" class="drawable late">
+                    <path d="M 180 750 L 520 750 L 470 820 L 230 820 Z" stroke-width="2" />
+                    <path d="M 230 820 L 350 750 L 470 820" stroke-width="1.5" stroke="var(--ink-muted)" />
+                    <path d="M 350 750 L 350 820" stroke-width="1.5" stroke="var(--ink-muted)" />
+                    <polygon points="170,750 190,750 180,740" fill="var(--ink)" stroke="none" />
+                    <polygon points="510,750 530,750 520,740" fill="var(--ink)" stroke="none" />
+                    <g id="civil-damper" transform="translate(350, 820)">
+                        <line x1="0" y1="0" x2="0" y2="70" stroke="var(--accent)" stroke-width="3" />
+                        <circle cx="0" cy="70" r="15" fill="var(--bg)" stroke="var(--accent)" stroke-width="3" />
+                        <circle cx="0" cy="70" r="5" fill="var(--ink)" stroke="none" />
+                    </g>
+                </g>
+
+                <!-- ==========================================
+                     5. NODE: RADAR & SIGNAL PROPAGATION (Bot Center)
+                     ========================================== -->
+                <g id="node-ec" fill="none" stroke="var(--ink)" class="drawable late">
+                    <path d="M 830 920 L 890 920 L 870 880 L 850 880 Z" stroke-width="2" />
+                    <g id="ec-dish">
+                        <path d="M 820 830 Q 860 880 900 830" stroke-width="4" stroke="var(--accent)" />
+                        <line x1="860" y1="855" x2="860" y2="810" stroke-width="2" />
+                        <circle cx="860" cy="810" r="4" fill="var(--accent)" stroke="none" />
+                    </g>
+                    <!-- Expanding Signal Propagation Arcs -->
+                    <g id="ec-arcs"></g>
+                    
+                    <rect x="980" y="800" width="180" height="120" rx="8" stroke-width="2" fill="var(--bg)" />
+                    <path d="M 980 840 L 1160 840 M 980 880 L 1160 880 M 1040 800 L 1040 920 M 1100 800 L 1100 920" stroke="var(--ink-faint)" stroke-width="1" />
+                    <path id="signal-wave" stroke="var(--accent)" stroke-width="2" />
+                </g>
+
+                <!-- ==========================================
+                     6. NODE: GIMBAL & INSTRUMENTATION (Bot Right)
+                     ========================================== -->
+                <g id="node-ic" fill="none" stroke="var(--ink)" class="drawable late">
+                    <circle cx="1570" cy="780" r="80" stroke-width="1" stroke-dasharray="2 8" />
+                    <circle cx="1570" cy="780" r="70" stroke-width="2" />
+                    <line x1="1490" y1="780" x2="1650" y2="780" stroke="var(--ink-faint)" stroke-width="1" />
+                    <line x1="1570" y1="700" x2="1570" y2="860" stroke="var(--ink-faint)" stroke-width="1" />
+                    <g id="ic-reticle">
+                        <circle cx="1570" cy="780" r="25" stroke="var(--accent)" stroke-width="2" />
+                        <line x1="1570" y1="745" x2="1570" y2="765" stroke="var(--accent)" stroke-width="2" />
+                        <line x1="1570" y1="815" x2="1570" y2="795" stroke="var(--accent)" stroke-width="2" />
+                        <line x1="1535" y1="780" x2="1555" y2="780" stroke="var(--accent)" stroke-width="2" />
+                        <line x1="1605" y1="780" x2="1585" y2="780" stroke="var(--accent)" stroke-width="2" />
+                        <circle cx="1570" cy="780" r="3" fill="var(--accent)" stroke="none" />
+                    </g>
+                    <rect x="1450" y="730" width="10" height="100" stroke-width="2" fill="var(--bg)" />
+                    <rect x="1680" y="730" width="10" height="100" stroke-width="2" fill="var(--bg)" />
+                </g>
+
+                <!-- ==========================================
+                     7. NODE: VERNIER CALIPER (Mid Right) 
+                     ========================================== -->
+                <g id="node-vernier" fill="none" stroke="var(--ink)" class="drawable late">
+                    <rect x="1470" y="520" width="260" height="40" stroke-width="2" fill="var(--bg)" />
+                    <g id="vernier-ticks"></g>
+                    
+                    <g id="vernier-slider">
+                        <path d="M 1470 510 L 1510 510 L 1510 610 L 1490 610 L 1470 590 Z" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                        <line x1="1480" y1="520" x2="1480" y2="560" stroke="var(--ink)" stroke-width="1" />
+                        <line x1="1490" y1="520" x2="1490" y2="560" stroke="var(--ink)" stroke-width="1" />
+                        <line x1="1500" y1="520" x2="1500" y2="560" stroke="var(--ink)" stroke-width="1" />
+                    </g>
+                    
+                    <path d="M 1730 510 L 1770 510 L 1770 590 L 1750 610 L 1730 610 Z" fill="var(--bg)" stroke="var(--ink)" stroke-width="2" />
+                </g>
+
+                <!-- ==========================================
+                     8. NODE: COMPUTERS & NETWORK GRAPH (Top Right)
+                     ========================================== -->
+                <g id="node-cs" fill="none" stroke="var(--ink)" class="drawable late">
+                    <!-- Network Graph Matrix -->
+                    <g id="network-graph" stroke-width="1.5">
+                        <path d="M 1470 200 L 1550 150 L 1630 180 L 1700 120 L 1550 150" stroke="var(--ink-muted)" />
+                        <path d="M 1470 200 L 1520 250 L 1630 180" stroke="var(--ink-muted)" />
+                        <path d="M 1520 250 L 1600 280 L 1700 120" stroke="var(--ink-muted)" />
+                        
+                        <circle cx="1470" cy="200" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                        <circle cx="1550" cy="150" r="4" fill="var(--bg)" stroke="var(--ink)" stroke-width="2" />
+                        <circle cx="1630" cy="180" r="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                        <circle cx="1700" cy="120" r="5" fill="var(--bg)" stroke="var(--ink)" stroke-width="2" />
+                        <circle cx="1520" cy="250" r="5" fill="var(--bg)" stroke="var(--ink)" stroke-width="2" />
+                        <circle cx="1600" cy="280" r="7" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" />
+                        
+                        <!-- Pulse Dots -->
+                        <circle id="net-pulse-1" r="3" fill="var(--accent)" stroke="none" />
+                        <circle id="net-pulse-2" r="3" fill="var(--accent)" stroke="none" />
+                        <circle id="net-pulse-3" r="3" fill="var(--accent)" stroke="none" />
+                    </g>
+
+                    <rect x="1350" y="150" width="70" height="180" stroke-width="2" fill="var(--bg)" />
+                    <line x1="1350" y1="180" x2="1420" y2="180" stroke-width="2" />
+                    <line x1="1350" y1="210" x2="1420" y2="210" stroke-width="2" />
+                    <line x1="1350" y1="240" x2="1420" y2="240" stroke-width="2" />
+                    <line x1="1350" y1="270" x2="1420" y2="270" stroke-width="2" />
+                    <line x1="1350" y1="300" x2="1420" y2="300" stroke-width="2" />
+                    <g id="server-leds" fill="var(--accent)" stroke="none"></g>
+
+                    <rect x="1450" y="280" width="110" height="80" rx="4" stroke-width="2" fill="var(--bg)" />
+                    <rect x="1455" y="285" width="100" height="70" stroke-width="1" fill="#010203" />
+                    
+                    <!-- Computer Terminal Code -->
+                    <text x="1460" y="300" font-family="monospace" font-size="8" fill="var(--accent)" stroke="none">printf("INIT");</text>
+                    <text x="1460" y="315" font-family="monospace" font-size="8" fill="var(--ink-muted)" stroke="none">sys.boot()</text>
+                    <text x="1460" y="330" font-family="monospace" font-size="8" fill="var(--ink-muted)" stroke="none">alloc(mem)</text>
+                    <rect id="terminal-cursor" x="1460" y="338" width="5" height="8" fill="var(--accent)" stroke="none" />
+                    
+                    <path d="M 1495 360 L 1515 360 L 1525 380 L 1485 380 Z" stroke-width="2" />
+                </g>
+
+                <!-- ==========================================
+                     9. CENTRAL CORE: GEAR PLACEHOLDERS -> IMAGE
+                     ========================================== -->
+                <g id="center-gears" fill="none" stroke="var(--ink)">
+                    <!-- 4 interconnected center gears (bottom one removed) -->
+                    <path id="center-gear1" stroke-width="2" />
+                    <path id="center-gear2" stroke-width="2" />
+                    <path id="center-gear3" stroke-width="2" />
+                    <path id="center-gear5" stroke-width="2" />
+                    
+                    <!-- Gear Hubs -->
+                    <circle cx="875" cy="540" r="15" stroke-width="2" fill="var(--bg)" />
+                    <circle cx="1060" cy="540" r="10" stroke-width="2" fill="var(--bg)" />
+                    <circle cx="1060" cy="417.5" r="8" stroke-width="2" fill="var(--bg)" />
+                    <circle cx="1156.25" cy="417.5" r="6" stroke-width="2" fill="var(--bg)" />
+                </g>
+
+                <g id="core-reveal" opacity="0">
+                    <rect x="760" y="340" width="400" height="400" fill="var(--bg)" stroke="var(--ink-muted)" stroke-width="2" />
+                    <image href="college%20potrait.jpeg" x="760" y="340" width="400" height="400" preserveAspectRatio="xMidYMid slice" />
+                    
+                    <path d="M 750 350 L 750 330 L 770 330" fill="none" stroke="var(--accent)" stroke-width="3" />
+                    <path d="M 1170 350 L 1170 330 L 1150 330" fill="none" stroke="var(--accent)" stroke-width="3" />
+                    <path d="M 750 730 L 750 750 L 770 750" fill="none" stroke="var(--accent)" stroke-width="3" />
+                    <path d="M 1170 730 L 1170 750 L 1150 750" fill="none" stroke="var(--accent)" stroke-width="3" />
+                </g>
+
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        const ns = 'http://www.w3.org/2000/svg';
+
+        // --- MATH / GENERATORS ---
+        function createGearPath(cx, cy, rPitch, teeth, toothDepth = 8) {
+            let path = "";
+            const angleStep = (Math.PI * 2) / teeth;
+            const rOuter = rPitch + toothDepth;
+            const rInner = rPitch - toothDepth;
+
+            for (let i = 0; i < teeth; i++) {
+                const angle = i * angleStep;
+                const nextAngle = (i + 1) * angleStep;
+                
+                const toothStart = angle + angleStep * 0.15;
+                const toothTop1 = angle + angleStep * 0.35;
+                const toothTop2 = angle + angleStep * 0.65;
+                const toothEnd = angle + angleStep * 0.85;
+
+                const x0 = cx + rInner * Math.cos(toothStart); const y0 = cy + rInner * Math.sin(toothStart);
+                const x1 = cx + rOuter * Math.cos(toothTop1);  const y1 = cy + rOuter * Math.sin(toothTop1);
+                const x2 = cx + rOuter * Math.cos(toothTop2);  const y2 = cy + rOuter * Math.sin(toothTop2);
+                const x3 = cx + rInner * Math.cos(toothEnd);   const y3 = cy + rInner * Math.sin(toothEnd);
+                const xNext = cx + rInner * Math.cos(nextAngle + angleStep * 0.15);
+                const yNext = cy + rInner * Math.sin(nextAngle + angleStep * 0.15);
+
+                if (i === 0) path += `M ${cx + rInner * Math.cos(0)} ${cy + rInner * Math.sin(0)} `;
+                path += `L ${x0} ${y0} L ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${xNext} ${yNext} `;
+            }
+            path += "Z";
+            return path;
+        }
+
+        // Setup outer nodes gears
+        document.getElementById('mech-gear1').setAttribute('d', createGearPath(210, 300, 45, 18));
+        document.getElementById('mech-gear2').setAttribute('d', createGearPath(290, 300, 35, 14));
+        document.getElementById('ui-gear-path').setAttribute('d', createGearPath(50, 50, 26, 10, 4));
+
+        // Center Complex Gears Setup
+        document.getElementById('center-gear1').setAttribute('d', createGearPath(875, 540, 105, 24));
+        document.getElementById('center-gear2').setAttribute('d', createGearPath(1060, 540, 70, 16));
+        document.getElementById('center-gear3').setAttribute('d', createGearPath(1060, 417.5, 52.5, 12));
+        document.getElementById('center-gear5').setAttribute('d', createGearPath(1156.25, 417.5, 43.75, 10));
+
+        // Vernier Ticks
+        const vernierTicks = document.getElementById('vernier-ticks');
+        for (let x = 1480; x <= 1720; x += 10) {
+            const isMajor = (x - 1480) % 50 === 0;
+            const yStart = 520;
+            const yEnd = isMajor ? 535 : 528;
+            const line = document.createElementNS(ns, 'line');
+            line.setAttribute('x1', x); line.setAttribute('y1', yStart);
+            line.setAttribute('x2', x); line.setAttribute('y2', yEnd);
+            line.setAttribute('stroke', isMajor ? 'var(--ink)' : 'var(--ink-muted)');
+            line.setAttribute('stroke-width', '1.5');
+            vernierTicks.appendChild(line);
+        }
+
+        const ecArcs = document.getElementById('ec-arcs');
+        const numArcs = 4;
+        const arcElements = [];
+        for (let i = 0; i < numArcs; i++) {
+            const arc = document.createElementNS(ns, 'path');
+            arc.setAttribute('fill', 'none');
+            arc.setAttribute('stroke', 'var(--ink)');
+            arc.setAttribute('stroke-width', '1.5');
+            ecArcs.appendChild(arc);
+            arcElements.push(arc);
+        }
+
+        const sigPath = document.getElementById('signal-wave');
+        let sigD = `M 980 860 `;
+        for(let x = 0; x <= 180; x += 2) {
+            sigD += `L ${980 + x} ${860} `;
+        }
+        sigPath.setAttribute('d', sigD);
+
+        const serverLeds = document.getElementById('server-leds');
+        const ledArray = [];
+        for (let row = 0; row < 5; row++) {
+            for (let col = 0; col < 3; col++) {
+                const led = document.createElementNS(ns, 'circle');
+                led.setAttribute('cx', 1365 + col * 15);
+                led.setAttribute('cy', 165 + row * 30);
+                led.setAttribute('r', '2');
+                serverLeds.appendChild(led);
+                ledArray.push(led);
+            }
+        }
+
+        // --- PREPARE STROKE DRAWING ---
+        document.querySelectorAll('.drawable').forEach(el => {
+            if (el.tagName === 'g') {
+                el.style.opacity = 0; 
+                el.dataset.type = 'group';
+            } else {
+                el.dataset.type = 'path';
+                try {
+                    const existingDash = el.getAttribute('stroke-dasharray');
+                    if (existingDash && !el.id.includes('flow')) {
+                         el.dataset.type = 'group'; 
+                         el.style.opacity = 0;
+                    } else {
+                        let len = el.getTotalLength();
+                        el.dataset.len = len;
+                        el.style.strokeDasharray = len;
+                        el.style.strokeDashoffset = len;
+                    }
+                } catch(e) {
+                    el.dataset.type = 'group';
+                    el.style.opacity = 0;
+                }
+            }
+        });
+
+        // --- SCROLL INTERPOLATION ---
+        let targetProgress = 0;
+        let currentProgress = 0;
+
+        const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+        const mapRange = (val, inMin, inMax, outMin, outMax) => outMin + ((val - inMin) / (inMax - inMin)) * (outMax - outMin);
+        const smoothstep = (t) => t * t * (3 - 2 * t);
+        const lerp = (start, end, t) => start + (end - start) * t;
+
+        window.addEventListener('scroll', () => {
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            targetProgress = clamp(window.scrollY / maxScroll, 0, 1);
+        });
+
+        // DOM Elements for Animation Loop
+        const cameraRig = document.getElementById('camera-rig');
+        const uiPercentText = document.getElementById('ui-percent');
+        const uiGearSpin = document.getElementById('ui-gear-spin');
+        
+        const eeeRotor = document.getElementById('eee-rotor');
+        const elecArcs = [
+            document.getElementById('arc1'),
+            document.getElementById('arc2'),
+            document.getElementById('arc3')
+        ];
+        
+        const gear1 = document.getElementById('mech-gear1');
+        const gear2 = document.getElementById('mech-gear2');
+        const mCrank = document.getElementById('mech-crank');
+        const mCrankPin = document.getElementById('mech-crank-pin');
+        const mRod = document.getElementById('mech-rod');
+        const mPiston = document.getElementById('mech-piston');
+
+        const railYLine = document.getElementById('plotter-rail-y');
+        const plotterHead = document.getElementById('plotter-head');
+        const plotterLaser = document.getElementById('plotter-laser');
+        const eventPoster = document.getElementById('event-poster-art');
+        const eventTicket = document.getElementById('event-ticket');
+        
+        const civilDamper = document.getElementById('civil-damper');
+        
+        const ecDish = document.getElementById('ec-dish');
+        const signalWave = document.getElementById('signal-wave');
+        
+        const icReticle = document.getElementById('ic-reticle');
+
+        const vernierSlider = document.getElementById('vernier-slider');
+        
+        const terminalCursor = document.getElementById('terminal-cursor');
+        
+        const netPaths = [
+            {x1:1470, y1:200, x2:1550, y2:150},
+            {x1:1470, y1:200, x2:1520, y2:250},
+            {x1:1630, y1:180, x2:1700, y2:120}
+        ];
+        const netPulses = [
+            document.getElementById('net-pulse-1'),
+            document.getElementById('net-pulse-2'),
+            document.getElementById('net-pulse-3')
+        ];
+
+        const busFlows = document.getElementById('data-flows').children;
+        const centerGearsGrp = document.getElementById('center-gears');
+        const cGear1 = document.getElementById('center-gear1');
+        const cGear2 = document.getElementById('center-gear2');
+        const cGear3 = document.getElementById('center-gear3');
+        const cGear5 = document.getElementById('center-gear5');
+        const coreReveal = document.getElementById('core-reveal');
+
+        const camStops = [
+            { p: 0.00, x: 960,  y: 540, s: 0.65 }, 
+            { p: 0.08, x: 960,  y: 200, s: 1.50 }, // PWR
+            { p: 0.16, x: 350,  y: 300, s: 1.50 }, // KIN
+            { p: 0.24, x: 250,  y: 540, s: 1.50 }, // EVT
+            { p: 0.32, x: 350,  y: 780, s: 1.50 }, // STR
+            { p: 0.40, x: 960,  y: 850, s: 1.50 }, // RAD
+            { p: 0.48, x: 1570, y: 780, s: 1.50 }, // GMB
+            { p: 0.56, x: 1670, y: 540, s: 1.50 }, // VERNIER
+            { p: 0.64, x: 1570, y: 220, s: 1.50 }, // LOG
+            { p: 0.78, x: 960,  y: 540, s: 1.10 }, // Center Gears Look
+            { p: 0.88, x: 960,  y: 540, s: 0.65 }, // Zoom Out slightly (Image Fades In)
+            { p: 1.00, x: 960,  y: 540, s: 2.20 }  // Final Zoom Into Photo
+        ];
+
+        // --- RENDER LOOP ---
+        function render() {
+            currentProgress += (targetProgress - currentProgress) * 0.06; 
+            if (Math.abs(targetProgress - currentProgress) < 0.0001) currentProgress = targetProgress;
+            const p = currentProgress;
+
+            uiPercentText.textContent = Math.round(p * 100) + "%";
+            uiGearSpin.setAttribute('transform', `rotate(${p * 1440}, 50, 50)`);
+
+            const drawP = clamp(mapRange(p, 0.0, 0.10, 0, 1), 0, 1);
+            document.querySelectorAll('.drawable').forEach(el => {
+                if(el.dataset.type === 'path') el.style.strokeDashoffset = el.dataset.len * (1 - smoothstep(drawP));
+                else el.style.opacity = drawP;
+            });
+
+            let startCam = camStops[0], endCam = camStops[1];
+            for (let i = 0; i < camStops.length - 1; i++) {
+                if (p >= camStops[i].p && p <= camStops[i + 1].p) {
+                    startCam = camStops[i];
+                    endCam = camStops[i + 1];
+                    break;
+                }
+            }
+            if (p >= camStops[camStops.length - 1].p) startCam = endCam = camStops[camStops.length - 1];
+            const camSegmentT = clamp((p - startCam.p) / (endCam.p - startCam.p || 1), 0, 1);
+            const easeT = smoothstep(camSegmentT);
+            const camX = lerp(startCam.x, endCam.x, easeT);
+            const camY = lerp(startCam.y, endCam.y, easeT);
+            const camS = lerp(startCam.s, endCam.s, easeT);
+            cameraRig.setAttribute('transform', `translate(960, 540) scale(${camS}) translate(${-camX}, ${-camY})`);
+
+            const rotorRot = p * 2160; 
+            eeeRotor.setAttribute('transform', `rotate(${rotorRot}, 860, 200)`);
+            elecArcs[0].setAttribute('opacity', (Math.sin(p * 2000) > 0.5) ? 1 : 0);
+            elecArcs[1].setAttribute('opacity', (Math.sin(p * 2300 + 1) > 0.5) ? 1 : 0);
+            elecArcs[2].setAttribute('opacity', (Math.sin(p * 1800 + 2) > 0.5) ? 1 : 0);
+
+            const gear1Rot = p * 1440; 
+            const ratio = 18 / 14;     
+            const gear2Rot = -gear1Rot * ratio + 12.85; 
+            gear1.setAttribute('transform', `rotate(${gear1Rot}, 210, 300)`);
+            gear2.setAttribute('transform', `rotate(${gear2Rot}, 290, 300)`);
+            
+            const theta = gear2Rot * (Math.PI / 180); 
+            const crankR = 40; const rodL = 100;
+            const pinX = 290 + crankR * Math.cos(theta);
+            const pinY = 300 + crankR * Math.sin(theta);
+            
+            mCrank.setAttribute('x2', pinX); mCrank.setAttribute('y2', pinY);
+            mCrankPin.setAttribute('cx', pinX); mCrankPin.setAttribute('cy', pinY);
+            
+            const sliderX = 290 + crankR * Math.cos(theta) + Math.sqrt(rodL*rodL - Math.pow(crankR * Math.sin(theta), 2));
+            mRod.setAttribute('x1', pinX); mRod.setAttribute('y1', pinY);
+            mRod.setAttribute('x2', sliderX); mRod.setAttribute('y2', 300);
+            mPiston.setAttribute('x', sliderX);
+
+            const railY = 520 + Math.sin(p * Math.PI * 30) * 60;
+            const headX = 250 + Math.cos(p * Math.PI * 44) * 70; 
+            railYLine.setAttribute('y1', railY);
+            railYLine.setAttribute('y2', railY);
+            plotterHead.setAttribute('x', headX - 10);
+            plotterHead.setAttribute('y', railY - 10);
+            plotterLaser.setAttribute('cx', headX);
+            plotterLaser.setAttribute('cy', railY);
+            eventPoster.setAttribute('opacity', 0.4 + Math.sin(p * Math.PI * 50) * 0.4);
+            const ticketExtrude = (p * 500) % 50; 
+            eventTicket.setAttribute('height', ticketExtrude);
+
+            const damperAngle = Math.sin(p * Math.PI * 25) * 20; 
+            civilDamper.setAttribute('transform', `translate(350, 820) rotate(${damperAngle})`);
+
+            const dishAngle = Math.sin(p * Math.PI * 8) * 30; 
+            ecDish.setAttribute('transform', `rotate(${dishAngle}, 860, 855)`);
+            
+            const waveSpeed = p * 2000;
+            const maxArcDist = 120;
+            arcElements.forEach((arc, i) => {
+                const currentDist = (waveSpeed + i * (maxArcDist / numArcs)) % maxArcDist;
+                const arcWidth = 30 + currentDist * 1.5;
+                const arcY = 810 - currentDist;
+                arc.setAttribute('d', `M ${860 - arcWidth} ${arcY + currentDist*0.2} Q 860 ${arcY - currentDist*0.3} ${860 + arcWidth} ${arcY + currentDist*0.2}`);
+                arc.setAttribute('opacity', clamp(1 - (currentDist / maxArcDist), 0, 1));
+            });
+
+            let newSigD = `M 980 860 `;
+            for(let x = 0; x <= 180; x += 2) {
+                const freq = 0.05 + (Math.sin(p * 20) * 0.03);
+                const amp = 10 + (Math.sin(p * 50) * 20);
+                const y = 860 + Math.sin((x + p*1000) * freq) * amp;
+                newSigD += `L ${980 + x} ${y} `;
+            }
+            signalWave.setAttribute('d', newSigD);
+
+            const reticleX = Math.sin(p * Math.PI * 16) * 30;
+            const reticleY = Math.sin(p * Math.PI * 22) * 30;
+            icReticle.setAttribute('transform', `translate(${reticleX}, ${reticleY})`);
+
+            const vernierMove = (Math.sin(p * Math.PI * 15) + 1) * 35;
+            vernierSlider.setAttribute('transform', `translate(${vernierMove}, 0)`);
+
+            netPulses.forEach((pulse, i) => {
+                const t = (p * 15 + i * 0.3) % 1;
+                const path = netPaths[i];
+                pulse.setAttribute('cx', lerp(path.x1, path.x2, t));
+                pulse.setAttribute('cy', lerp(path.y1, path.y2, t));
+            });
+
+            terminalCursor.setAttribute('opacity', (Math.floor(p * 300) % 2 === 0) ? 1 : 0);
+            
+            ledArray.forEach((led, i) => {
+                const isOn = Math.sin(p * 1500 + i * 45) > 0;
+                led.setAttribute('opacity', isOn ? 1 : 0.2);
+            });
+
+            const flowOffset = -p * 3500;
+            Array.from(busFlows).forEach(path => {
+                path.style.strokeDashoffset = flowOffset;
+            });
+
+            // Center Complex Gears Rotation logic
+            const cG1Rot = p * 1440;
+            const cG2Rot = -cG1Rot * (24/16) + 11.25; 
+            const cG3Rot = -cG2Rot * (16/12) + 15; 
+            const cG5Rot = -cG3Rot * (12/10) + 18;
+
+            cGear1.setAttribute('transform', `rotate(${cG1Rot}, 875, 540)`);
+            cGear2.setAttribute('transform', `rotate(${cG2Rot}, 1060, 540)`);
+            cGear3.setAttribute('transform', `rotate(${cG3Rot}, 1060, 417.5)`);
+            cGear5.setAttribute('transform', `rotate(${cG5Rot}, 1156.25, 417.5)`);
+
+            const revealP = clamp(mapRange(p, 0.85, 0.90, 0, 1), 0, 1);
+            centerGearsGrp.setAttribute('opacity', 1 - smoothstep(revealP));
+            coreReveal.setAttribute('opacity', smoothstep(revealP));
+
+            requestAnimationFrame(render);
+        }
+
+        requestAnimationFrame(render);
+
+    </script>
+</body>
+</html>

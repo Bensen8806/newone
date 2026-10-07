@@ -64,7 +64,7 @@ def main():
         
         # Blend
         blended = Image.blend(cloud_zoomed, first_frame_enhanced, alpha)
-        blended.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.png'))
+        blended.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.jpg'), quality=95)
         current_idx += 1
 
     # 4. Enhance and copy main frames
@@ -73,7 +73,7 @@ def main():
         img = Image.open(frame_path).convert('RGB')
         img_enhanced = enhance_image(img)
         img_enhanced = img_enhanced.resize((1920, 1080), Image.Resampling.LANCZOS)
-        img_enhanced.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.png'))
+        img_enhanced.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.jpg'), quality=95)
         current_idx += 1
 
     # 5. Generate Outro Transition (Last Frame -> Cloud)
@@ -86,7 +86,7 @@ def main():
         
         # Blend (alpha represents cloud, so we blend last_frame with cloud)
         blended = Image.blend(last_frame_enhanced, cloud_zoomed, alpha)
-        blended.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.png'))
+        blended.save(os.path.join(OUTPUT_DIR, f'frame_{current_idx:04d}.jpg'), quality=95)
         current_idx += 1
 
     print(f"Done! Generated {current_idx - 1} frames.")

@@ -9,7 +9,7 @@ const DEFAULT_ITEMS = ['Off', 'Low', 'Medium', 'High', 'Max'];
 const SIZES = { sm: [28, 12, 12], md: [36, 13, 16], lg: [44, 14, 20] } as const;
 
 const spring = (k: number, m: number, bounce: number) => ({
-  type: 'spring',
+  type: 'spring' as const,
   stiffness: k,
   damping: 2 * Math.sqrt(k * m) * (1 - bounce),
   mass: m

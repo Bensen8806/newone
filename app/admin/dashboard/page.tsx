@@ -4,10 +4,6 @@ import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { approveRoleRequest, rejectRoleRequest } from '@/app/actions/admin'
 import { Button } from '@/components/ui/button'
-import SpecularButton from '@/components/ui/SpecularButton'
-import Galaxy from '@/components/ui/Galaxy'
-import TextType from '@/components/ui/TextType'
-import BorderGlow from '@/components/ui/BorderGlow'
 import Link from 'next/link'
 import CreatePostButton from '@/components/CreatePostButton'
 
@@ -37,135 +33,158 @@ export default async function AdminDashboard() {
     .eq('club_head_id', user.id)
     .order('created_at', { ascending: false })
 
-  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
-
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
-      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
-      </div>
-
-      <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+    <div className="min-h-screen bg-transparent pt-28 pb-20 px-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
           <div>
-            <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Admin Dashboard" typingSpeed={50} loop={false} />
-            <p className="text-muted-foreground mt-2 text-lg">Manage platform users and role requests.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Admin Dashboard</h1>
+            <p className="text-sm text-white/50">Manage platform users and role requests.</p>
           </div>
           <div className="flex gap-3 flex-wrap">
             <Link href="/map">
-              <SpecularButton 
-                size="md"
-                baseColor="#1f2937"
-                lineColor="#3b82f6"
-              >
+              <Button variant="outline" className="h-9 px-4 text-xs font-medium border-white/10 bg-white/5 text-white hover:bg-white/10 transition-colors">
                 Book Venue
-              </SpecularButton>
+              </Button>
             </Link>
             <form action={logout}>
-              <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
+              <Button type="submit" variant="outline" className="h-9 px-4 text-xs font-medium border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:text-white transition-colors">
+                Sign out
+              </Button>
             </form>
           </div>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-8">
-            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 space-y-6">
+            {/* Profile Card */}
+            <div className="border border-white/10 bg-[#0A0A0A] rounded-xl p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
+                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white text-xl font-medium flex-shrink-0">
                   {profile?.name ? profile.name.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{profile?.name}</h2>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/20 text-red-700 dark:text-red-400 border border-red-500/30">
+                  <h2 className="text-base font-medium text-white">{profile?.name}</h2>
+                  <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/5 text-[10px] text-white/70 uppercase tracking-wider mt-1 inline-block">
                     Admin
                   </span>
                 </div>
               </div>
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Email: {profile?.email}</span></div>
-                <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Roles: {profile?.role?.join(', ')}</span></div>
+              <div className="space-y-3 pt-4 border-t border-white/5">
+                <div>
+                  <div className="text-[10px] text-white/40 uppercase tracking-widest font-semibold mb-1">Email</div>
+                  <div className="text-sm text-white/90">{profile?.email}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-white/40 uppercase tracking-widest font-semibold mb-1">Roles</div>
+                  <div className="text-sm text-white/90">{profile?.role?.join(', ')}</div>
+                </div>
               </div>
-            </BorderGlow>
+            </div>
           </div>
 
           <div className="lg:col-span-2">
-            <BorderGlow className={`${glassCard} h-full min-h-[400px] flex flex-col`} backgroundColor="transparent" glowColor="40 100 70">
-              <h2 className="text-2xl font-bold mb-6">Pending Role Requests</h2>
-              {pendingRequests && pendingRequests.length > 0 ? (
-                <div className="grid gap-4 flex-grow">
-                  {pendingRequests.map((req) => (
-                    <div key={req.id} className="bg-white/5 dark:bg-black/10 p-6 rounded-xl border border-white/10 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div>
-                        <p className="font-semibold text-lg">{req.name}</p>
-                        <p className="text-muted-foreground">{req.email}</p>
-                        <p className="mt-2 text-sm">
-                          Requested Role: <span className="font-bold text-primary bg-primary/10 px-2 py-1 rounded">{req.requested_role}</span>
-                        </p>
+            {/* Role Requests Section */}
+            <div className="border border-white/10 bg-[#0A0A0A] rounded-xl flex flex-col h-full min-h-[400px]">
+              <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center gap-2">
+                <h2 className="text-sm font-medium text-white/90">Pending Role Requests</h2>
+                {pendingRequests && pendingRequests.length > 0 && (
+                  <span className="ml-2 px-1.5 py-0.5 rounded-full bg-white/10 text-[10px] text-white">
+                    {pendingRequests.length}
+                  </span>
+                )}
+              </div>
+              
+              <div className="flex-grow p-6">
+                {pendingRequests && pendingRequests.length > 0 ? (
+                  <div className="flex flex-col gap-4">
+                    {pendingRequests.map((req) => (
+                      <div key={req.id} className="bg-[#111] p-5 rounded-lg border border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="space-y-1">
+                          <h3 className="text-sm font-medium text-white">{req.name}</h3>
+                          <p className="text-xs text-white/50">{req.email}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-[10px] text-white/40 uppercase tracking-wider">Requested Role:</span>
+                            <span className="text-[10px] font-medium text-white px-2 py-0.5 bg-white/10 rounded-sm">{req.requested_role}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                          <form action={rejectRoleRequest.bind(null, req.id)} className="flex-1 md:flex-none">
+                            <Button 
+                              type="submit"
+                              variant="outline"
+                              size="sm"
+                              className="w-full h-8 px-4 text-xs font-medium border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                            >
+                              Reject
+                            </Button>
+                          </form>
+                          <form action={approveRoleRequest.bind(null, req.id, req.requested_role)} className="flex-1 md:flex-none">
+                            <Button 
+                              type="submit"
+                              size="sm"
+                              className="w-full h-8 px-4 text-xs font-medium bg-white text-black hover:bg-white/90 transition-colors"
+                            >
+                              Approve
+                            </Button>
+                          </form>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <form action={approveRoleRequest.bind(null, req.id, req.requested_role)}>
-                          <SpecularButton 
-                            type="submit"
-                            size="sm"
-                            baseColor="#065f46"
-                            lineColor="#10b981"
-                            textColor="#d1fae5"
-                          >
-                            Approve
-                          </SpecularButton>
-                        </form>
-                        <form action={rejectRoleRequest.bind(null, req.id)}>
-                          <SpecularButton 
-                            type="submit"
-                            size="sm"
-                            baseColor="#7f1d1d"
-                            lineColor="#ef4444"
-                            textColor="#fecaca"
-                          >
-                            Reject
-                          </SpecularButton>
-                        </form>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                    <h3 className="text-sm font-medium text-white/90 mb-1">All caught up</h3>
+                    <p className="text-xs text-white/50">No pending requests at the moment.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="border border-white/10 bg-[#0A0A0A] rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center gap-2">
+              <h2 className="text-sm font-medium text-white/90">My Events</h2>
+            </div>
+            
+            <div className="p-6">
+              {events && events.length > 0 ? (
+                <div className="flex flex-col gap-4">
+                  {events.map(event => (
+                    <div key={event.id} className="bg-[#111] p-5 rounded-lg border border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium text-white group-hover:text-white/90 transition-colors">{event.title}</h3>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
+                          <span><span className="text-white/30">Venue:</span> {(event.venues as { name: string })?.name}</span>
+                          <span><span className="text-white/30">Date:</span> {new Date(event.start_time).toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2 pt-2">
+                          <span className="text-[10px] text-white/40 uppercase tracking-wider">Status:</span>
+                          <span className="px-2 py-0.5 rounded-sm bg-white/10 text-[10px] text-white/80 font-medium">
+                            {event.status}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-2 md:mt-0 w-full md:w-auto flex justify-end">
+                        {event.status === 'APPROVED' && (
+                          <CreatePostButton eventId={event.id} />
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex-grow flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-white/10 dark:border-white/5 rounded-xl bg-white/5 dark:bg-black/10">
-                  <h3 className="text-lg font-semibold mb-2">All caught up</h3>
-                  <p className="text-muted-foreground max-w-sm">No pending requests at the moment.</p>
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-sm text-white/50">No events found.</p>
                 </div>
               )}
-            </BorderGlow>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">My Events</h2>
-        {events && events.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6">
-            {events.map(event => (
-              <div key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div>
-                  <h3 className="text-xl font-semibold">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground">Venue: {(event.venues as { name: string })?.name}</p>
-                  <p className="text-sm">Date: {new Date(event.start_time).toLocaleString()}</p>
-                  <p className="text-sm font-medium mt-2">Status: <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded">{event.status}</span></p>
-                </div>
-                
-                <div className="mt-4 md:mt-0 flex gap-2">
-                  {event.status === 'APPROVED' && (
-                    <CreatePostButton eventId={event.id} />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-card p-6 rounded-lg shadow-sm border">
-            <p className="text-muted-foreground">No events found.</p>
-          </div>
-        )}
       </div>
     </div>
   )

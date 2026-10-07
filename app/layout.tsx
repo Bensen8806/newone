@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator"
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 
+import GlobalBackground from '@/components/GlobalBackground'
+
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const poppins = Poppins({
   subsets: ['latin'],
@@ -27,9 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn('dark', inter.variable, poppins.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="min-h-screen font-sans antialiased bg-black">
+        <GlobalBackground />
         <TooltipProvider>
-          <div className="relative flex min-h-screen flex-col">
+          <div className="relative z-10 flex min-h-screen flex-col">
           <Navbar />
           
           <main className="flex-1 flex flex-col min-h-0">{children}</main>

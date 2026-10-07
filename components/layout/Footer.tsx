@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import JellyRadio from '@/components/ui/JellyRadio'
-import { Home, LayoutDashboard, Phone, Mail } from 'lucide-react'
 
 interface QuickLink {
   name: string
@@ -28,23 +27,19 @@ export default function Footer() {
   const radioItems = [
     {
       value: '/',
-      label: 'Home',
-      icon: <Home className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
+      label: 'Home'
     },
     {
       value: '/login',
-      label: 'Dashboard',
-      icon: <LayoutDashboard className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
+      label: 'Dashboard'
     },
     {
       value: 'contact',
-      label: 'Contact',
-      icon: <Phone className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
+      label: 'Contact'
     },
     {
       value: 'email',
-      label: 'Email Us',
-      icon: <Mail className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
+      label: 'Email Us'
     }
   ]
 

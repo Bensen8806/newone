@@ -1,11 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { logout } from '@/app/actions/auth'
-import Galaxy from '@/components/ui/Galaxy'
-import TextType from '@/components/ui/TextType'
-import BorderGlow from '@/components/ui/BorderGlow'
 import PrincipalActionButtons from '@/components/PrincipalActionButtons'
 
 export default async function PrincipalDashboard() {
@@ -18,8 +14,6 @@ export default async function PrincipalDashboard() {
 
   const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
 
-  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
-
   // Fetch events waiting for Principal approval
   const { data: events } = await supabase
     .from('events')
@@ -27,65 +21,77 @@ export default async function PrincipalDashboard() {
     .eq('status', 'PENDING_PRINCIPAL')
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
-      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
-      </div>
-
-      <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+    <div className="min-h-screen bg-transparent pt-28 pb-20 px-6">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
           <div>
-            <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Principal Dashboard" typingSpeed={50} loop={false} />
-            <p className="text-muted-foreground mt-2 text-lg">Final approval and oversight of campus activities.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Principal Dashboard</h1>
+            <p className="text-sm text-white/50">Final approval and oversight of campus activities.</p>
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <form action={logout}>
-              <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
-            </form>
-          </div>
-        </div>
+          <form action={logout}>
+            <Button type="submit" variant="outline" className="h-9 text-xs font-medium border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:text-white transition-colors">
+              Sign out
+            </Button>
+          </form>
+        </header>
 
-        <div className="grid grid-cols-1 gap-8">
-          <div className="space-y-8">
-            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
-                  {profile?.name ? profile.name.charAt(0).toUpperCase() : 'P'}
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{profile?.name}</h2>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-500/30">
-                    Principal
-                  </span>
-                </div>
+        <div className="grid grid-cols-1 gap-6">
+          {/* Profile Card */}
+          <div className="border border-white/10 bg-[#0A0A0A] rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white text-2xl font-medium flex-shrink-0">
+              {profile?.name ? profile.name.charAt(0).toUpperCase() : 'P'}
+            </div>
+            
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-medium text-white">{profile?.name}</h2>
+                <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/5 text-[10px] text-white/70 uppercase tracking-wider">
+                  Principal
+                </span>
               </div>
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Email: {profile?.email}</span></div>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm">
+                <div className="text-white/50"><span className="text-white/30 mr-1">Email:</span> {profile?.email}</div>
               </div>
-            </BorderGlow>
+            </div>
           </div>
 
-          <div className="mt-4">
-            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
-              <h2 className="text-2xl font-bold mb-4">Final Approval Queue</h2>
+          {/* Requests Section */}
+          <div className="border border-white/10 bg-[#0A0A0A] rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/10 flex items-center gap-2 bg-white/[0.02]">
+              <h2 className="text-sm font-medium text-white/90">Final Approval Queue</h2>
+              {events && events.length > 0 && (
+                <span className="ml-2 px-1.5 py-0.5 rounded-full bg-white/10 text-[10px] text-white">
+                  {events.length}
+                </span>
+              )}
+            </div>
+            
+            <div className="p-6">
               {events && events.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
+                <div className="flex flex-col divide-y divide-white/5">
                   {events.map((event) => (
-                    <div key={event.id} className="bg-card p-6 rounded-lg shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div>
-                        <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
-                        <p className="text-sm text-muted-foreground">Club: {(event.clubs as { name: string })?.name}</p>
-                        <p className="text-sm">Venue: {(event.venues as { name: string })?.name}</p>
-                        <p className="text-sm">Date: {new Date(event.start_time).toLocaleDateString()}</p>
+                    <div key={event.id} className="py-5 first:pt-0 last:pb-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group">
+                      <div className="space-y-1">
+                        <h3 className="text-base font-medium text-white group-hover:text-white/90 transition-colors">{event.title}</h3>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
+                          <span><span className="text-white/30">Club:</span> {(event.clubs as { name: string })?.name}</span>
+                          <span><span className="text-white/30">Venue:</span> {(event.venues as { name: string })?.name}</span>
+                          <span><span className="text-white/30">Date:</span> {new Date(event.start_time).toLocaleDateString()}</span>
+                        </div>
                       </div>
-                      <PrincipalActionButtons event={event as any} />
+                      <div className="w-full md:w-auto">
+                        <PrincipalActionButtons event={event as any} />
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground">No events awaiting final approval.</p>
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-sm text-white/40">No events awaiting final approval at this time.</p>
+                </div>
               )}
-            </BorderGlow>
+            </div>
           </div>
         </div>
       </div>

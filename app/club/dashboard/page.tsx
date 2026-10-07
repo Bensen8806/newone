@@ -2,12 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import SpecularButton from '@/components/ui/SpecularButton'
 import { logout } from '@/app/actions/auth'
 import CreatePostButton from '@/components/CreatePostButton'
-import Galaxy from '@/components/ui/Galaxy'
-import TextType from '@/components/ui/TextType'
-import BorderGlow from '@/components/ui/BorderGlow'
 import ClubEditForm from '@/components/ClubEditForm'
 
 export default async function ClubDashboard() {
@@ -28,119 +24,143 @@ export default async function ClubDashboard() {
   const { data: facultyAdvisors } = await adminClient.from('users').select('*').contains('role', ['FACULTY_ADVISOR'])
   const { data: departments } = await supabase.from('departments').select('*')
 
-  const glassCard = "bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/20 dark:hover:bg-white/5"
-
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] text-foreground">
-      <div className="absolute inset-0 -z-10 h-full w-full opacity-60">
-        <Galaxy mouseRepulsion={true} mouseInteraction={true} density={0.15} glowIntensity={0.5} saturation={0.1} hueShift={240} />
-      </div>
-
-      <div className="p-8 md:p-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+    <div className="min-h-screen bg-transparent pt-28 pb-20 px-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
           <div>
-            <TextType as="h1" className="text-4xl font-extrabold tracking-tight" text="Club Dashboard" typingSpeed={50} loop={false} />
-            <p className="text-muted-foreground mt-2 text-lg">Manage your club events and details.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Club Dashboard</h1>
+            <p className="text-sm text-white/50">Manage your club events and details.</p>
           </div>
           <div className="flex gap-3 flex-wrap">
             <Link href="/club/new-event">
-              <SpecularButton 
-                size="md"
-                baseColor="#1f2937"
-                lineColor="#10b981"
-              >
+              <Button variant="outline" className="h-9 px-4 text-xs font-medium border-white/10 bg-white/5 text-white hover:bg-white/10 transition-colors">
                 Request Venue
-              </SpecularButton>
+              </Button>
             </Link>
             <Link href="/map">
-              <SpecularButton 
-                size="md"
-                baseColor="#1f2937"
-                lineColor="#9ca3af"
-              >
+              <Button variant="outline" className="h-9 px-4 text-xs font-medium border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:text-white transition-colors">
                 View Map
-              </SpecularButton>
+              </Button>
             </Link>
             <form action={logout}>
-              <Button type="submit" className="rounded-full px-6 shadow-lg hover:scale-105 active:scale-95 transition-transform bg-foreground text-background hover:bg-foreground/80 dark:bg-foreground dark:text-background border border-foreground/10">Sign out</Button>
+              <Button type="submit" variant="outline" className="h-9 px-4 text-xs font-medium border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:text-white transition-colors">
+                Sign out
+              </Button>
             </form>
           </div>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-8">
-            <BorderGlow className={glassCard} backgroundColor="transparent" glowColor="40 100 70">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 space-y-6">
+            <div className="border border-white/10 bg-[#0A0A0A] rounded-xl p-6">
               <div className="flex items-center gap-4 mb-6">
                 {club?.logo_url ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={club.logo_url} alt="Club Logo" className="w-16 h-16 rounded-full object-cover shadow-inner" />
+                  <img src={club.logo_url} alt="Club Logo" className="w-14 h-14 rounded-full object-cover border border-white/10" />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
+                  <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white text-xl font-medium flex-shrink-0">
                     {profile?.name ? profile.name.charAt(0).toUpperCase() : 'C'}
                   </div>
                 )}
                 <div>
-                  <h2 className="text-xl font-bold">{profile?.name}</h2>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30">
+                  <h2 className="text-base font-medium text-white">{profile?.name}</h2>
+                  <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/5 text-[10px] text-white/70 uppercase tracking-wider mt-1 inline-block">
                     Club Head
                   </span>
                 </div>
               </div>
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Email: {profile?.email}</span></div>
+              
+              <div className="space-y-3 pt-4 border-t border-white/5">
+                <div>
+                  <div className="text-[10px] text-white/40 uppercase tracking-widest font-semibold mb-1">Email</div>
+                  <div className="text-sm text-white/90">{profile?.email}</div>
+                </div>
                 {club ? (
                   <>
-                    <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Club: {club.name}</span></div>
-                    <div className="flex items-center gap-3 text-muted-foreground"><span className="font-medium text-foreground">Type: {club.type}</span></div>
+                    <div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-widest font-semibold mb-1">Club</div>
+                      <div className="text-sm text-white/90 flex items-center">{club.name}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-widest font-semibold mb-1">Type</div>
+                      <div className="text-sm text-white/90">{club.type}</div>
+                    </div>
                   </>
                 ) : (
-                  <p className="text-muted-foreground italic">No club assigned yet.</p>
+                  <div>
+                    <p className="text-xs text-white/30 italic">No club assigned yet.</p>
+                  </div>
                 )}
               </div>
-              <ClubEditForm 
-                club={club} 
-                profile={profile} 
-                facultyAdvisors={facultyAdvisors || []} 
-                departments={departments || []} 
-              />
-            </BorderGlow>
+              
+              <div className="mt-6 pt-6 border-t border-white/5">
+                <ClubEditForm 
+                  club={club} 
+                  profile={profile} 
+                  facultyAdvisors={facultyAdvisors || []} 
+                  departments={departments || []} 
+                />
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-2">
-            <BorderGlow className={`${glassCard} h-full min-h-[400px] flex flex-col`} backgroundColor="transparent" glowColor="40 100 70">
-              <h2 className="text-2xl font-bold mb-6">My Events</h2>
-              {events && events.length > 0 ? (
-                <div className="grid gap-4 flex-grow">
-                  {events.map(event => (
-                    <div key={event.id} className="bg-white/5 dark:bg-black/10 p-6 rounded-xl border border-white/10 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center">
-                      <div>
-                        <h3 className="text-xl font-semibold">{event.title}</h3>
-                        <p className="text-sm text-muted-foreground">Venue: {(event.venues as { name: string })?.name}</p>
-                        <p className="text-sm">Date: {new Date(event.start_time).toLocaleString()}</p>
-                        <p className="text-sm font-medium mt-2">
-                          Status: <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md">{event.status}</span>
-                        </p>
-                        {event.status === 'PRINCIPAL_MEET_REQUESTED' && (
-                          <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                            <p className="font-bold text-yellow-600 dark:text-yellow-400">Principal requested a meeting</p>
-                            <p className="text-sm mt-1"><strong>Time:</strong> {new Date(event.principal_meeting_time!).toLocaleString()}</p>
-                            <p className="text-sm mt-1"><strong>Reason:</strong> {event.principal_meeting_reason}</p>
+            <div className="border border-white/10 bg-[#0A0A0A] rounded-xl flex flex-col h-full min-h-[400px]">
+              <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center gap-2">
+                <h2 className="text-sm font-medium text-white/90">My Events</h2>
+                {events && events.length > 0 && (
+                  <span className="ml-2 px-1.5 py-0.5 rounded-full bg-white/10 text-[10px] text-white">
+                    {events.length}
+                  </span>
+                )}
+              </div>
+              
+              <div className="flex-grow p-6">
+                {events && events.length > 0 ? (
+                  <div className="flex flex-col gap-4">
+                    {events.map(event => (
+                      <div key={event.id} className="bg-[#111] p-5 rounded-lg border border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group hover:border-white/10 transition-colors">
+                        <div className="space-y-1 flex-1">
+                          <h3 className="text-sm font-medium text-white group-hover:text-white/90 transition-colors">{event.title}</h3>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
+                            <span><span className="text-white/30">Venue:</span> {(event.venues as { name: string })?.name}</span>
+                            <span><span className="text-white/30">Date:</span> {new Date(event.start_time).toLocaleString()}</span>
                           </div>
-                        )}
+                          
+                          <div className="flex items-center gap-2 mt-2 pt-2">
+                            <span className="text-[10px] text-white/40 uppercase tracking-wider">Status:</span>
+                            <span className="px-2 py-0.5 rounded-sm bg-white/10 border border-white/5 text-[10px] text-white/80 font-medium">
+                              {event.status}
+                            </span>
+                          </div>
+                          
+                          {event.status === 'PRINCIPAL_MEET_REQUESTED' && (
+                            <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-md">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-xs font-semibold text-amber-500">Principal requested a meeting</p>
+                              </div>
+                              <p className="text-[10px] text-amber-500/70 mt-1.5"><span className="uppercase tracking-wider font-semibold opacity-60">Time:</span> {new Date(event.principal_meeting_time!).toLocaleString()}</p>
+                              <p className="text-[10px] text-amber-500/70 mt-0.5"><span className="uppercase tracking-wider font-semibold opacity-60">Reason:</span> {event.principal_meeting_reason}</p>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="mt-2 md:mt-0 flex justify-end">
+                          {event.status === 'APPROVED' && <CreatePostButton eventId={event.id} />}
+                        </div>
                       </div>
-                      <div className="mt-4 md:mt-0 flex gap-2">
-                        {event.status === 'APPROVED' && <CreatePostButton eventId={event.id} />}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex-grow flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-white/10 dark:border-white/5 rounded-xl bg-white/5 dark:bg-black/10">
-                  <h3 className="text-lg font-semibold mb-2">No events found</h3>
-                  <p className="text-muted-foreground max-w-sm">You haven&apos;t requested any events yet.</p>
-                </div>
-              )}
-            </BorderGlow>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                    <h3 className="text-sm font-medium text-white/90 mb-1">No events found</h3>
+                    <p className="text-xs text-white/50 max-w-sm">You haven&apos;t requested any events yet.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

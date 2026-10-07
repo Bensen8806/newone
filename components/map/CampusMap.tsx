@@ -55,20 +55,17 @@ export default function CampusMap({
   }
 
   const getStyle = (svgId: string) => {
-    // Find the db venue ID from our local constants since we need it to look up availability
     const constVenue = VENUES.find(v => v.svgId === svgId)
-    if (!constVenue) return { fill: 'rgba(63,63,70,0.4)', stroke: '#3f3f46', sw: 1 }
+    if (!constVenue) return { fill: 'rgba(255,255,255,0.02)', stroke: 'rgba(255,255,255,0.1)', sw: 1 }
 
-    // Use DB venue id to check availability map. If venues haven't loaded yet, default to pending/avail?
-    // We map svgId -> dbId using the venues prop.
     const dbVenue = venues.find(v => v.svg_element_id === svgId)
     const status = hasChecked && dbVenue ? availability[dbVenue.id] : undefined
 
     switch (status) {
-      case 'AVAILABLE': return { fill: 'rgba(22,163,74,0.12)', stroke: '#16a34a', sw: 1.5, dot: '#16a34a' }
-      case 'PENDING': return { fill: 'rgba(217,119,6,0.12)', stroke: '#d97706', sw: 1.5, dot: '#d97706' }
-      case 'BOOKED': return { fill: 'rgba(220,38,38,0.12)', stroke: '#dc2626', sw: 1.5, dot: '#dc2626' }
-      default: return { fill: 'rgba(63,63,70,0.4)', stroke: '#3f3f46', sw: 1, dot: '#52525b' }
+      case 'AVAILABLE': return { fill: 'rgba(22,163,74,0.05)', stroke: 'rgba(22,163,74,0.4)', sw: 1, dot: '#16a34a' }
+      case 'PENDING': return { fill: 'rgba(217,119,6,0.05)', stroke: 'rgba(217,119,6,0.4)', sw: 1, dot: '#d97706' }
+      case 'BOOKED': return { fill: 'rgba(220,38,38,0.05)', stroke: 'rgba(220,38,38,0.4)', sw: 1, dot: '#dc2626' }
+      default: return { fill: 'rgba(255,255,255,0.02)', stroke: 'rgba(255,255,255,0.1)', sw: 1, dot: 'transparent' }
     }
   }
 
@@ -87,13 +84,13 @@ export default function CampusMap({
 
     tooltipContent = (
       <div 
-        className="fixed z-50 bg-popover text-popover-foreground px-3 py-1.5 rounded-md text-sm shadow-md border animate-in fade-in-0 zoom-in-95 pointer-events-none max-w-[230px]"
+        className="fixed z-50 bg-[#111] text-white px-3 py-2 rounded-md text-xs shadow-2xl border border-white/10 animate-in fade-in-0 zoom-in-95 pointer-events-none max-w-[230px]"
         style={{ left: Math.min(tooltip.x, typeof window !== 'undefined' ? window.innerWidth - 240 : tooltip.x), top: tooltip.y }}
       >
-        <div className="font-bold text-[13px] mb-0.5">{dbVenue?.name || vConst?.name}</div>
-        <div className="text-[11px] text-muted-foreground mb-1">{dept?.name || vConst?.dept}</div>
-        <div className="text-xs text-accent">Capacity: {dbVenue?.capacity || vConst?.capacity}</div>
-        <div className="text-[11px] mt-1 text-muted-foreground">{st}</div>
+        <div className="font-semibold mb-1">{dbVenue?.name || vConst?.name}</div>
+        <div className="text-[10px] text-white/50 mb-1.5 uppercase tracking-wider">{dept?.name || vConst?.dept}</div>
+        <div className="text-[10px] text-white/70">Capacity: {dbVenue?.capacity || vConst?.capacity}</div>
+        <div className="text-[10px] mt-2 text-white/40 pt-2 border-t border-white/5">{st}</div>
       </div>
     )
   }
@@ -109,12 +106,11 @@ export default function CampusMap({
         <rect width="1000" height="700" fill="#000000" rx="0"/>
         {/* Departments */}
         {LAYOUT.depts.map(b => {
-          const dc = DC[b.dept as keyof typeof DC]
           const deptConst = DEPARTMENTS.find(d => d.code === b.dept)
           return (
             <g key={b.dept}>
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="10" fill={dc.bg} stroke={dc.st} strokeWidth="1.5"/>
-              <text x={b.lx} y={b.ly} textAnchor="middle" fontFamily="var(--font-poppins)" fontSize="10" fontWeight="700" fill="rgba(161,161,170,.5)" letterSpacing="1.5">
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="8" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+              <text x={b.lx} y={b.ly} textAnchor="middle" fontFamily="var(--font-inter)" fontSize="9" fontWeight="600" fill="rgba(255,255,255,0.2)" letterSpacing="1.5">
                 {deptConst?.name.toUpperCase() || b.dept}
               </text>
             </g>
@@ -130,11 +126,11 @@ export default function CampusMap({
           const sel = dbVenue && dbVenue.id === selectedVenueId
           
           const sty = getStyle(svgId)
-          const stroke = sel ? '#fafafa' : sty.stroke
-          const sw = sel ? 2.5 : sty.sw
-          const dotR = 4
-          const dotX = l.x + l.w - dotR - 5
-          const dotY = l.y + dotR + 5
+          const stroke = sel ? '#ffffff' : sty.stroke
+          const sw = sel ? 1.5 : sty.sw
+          const dotR = 3
+          const dotX = l.x + l.w - dotR - 6
+          const dotY = l.y + dotR + 6
           
           return (
             <g 
@@ -145,24 +141,26 @@ export default function CampusMap({
               onMouseLeave={handleMouseLeave}
             >
               <rect 
-                x={l.x} y={l.y} width={l.w} height={l.h} rx="7" 
+                x={l.x} y={l.y} width={l.w} height={l.h} rx="4" 
                 fill={sty.fill} stroke={stroke} strokeWidth={sw} 
                 className="transition-all duration-200"
               />
               <text 
-                x={l.x + l.w / 2} y={l.y + l.h / 2 + 4} 
-                textAnchor="middle" fontFamily="var(--font-inter)" fontWeight="600" fontSize={l.h < 45 ? 9 : l.w < 160 ? 10 : 11} 
-                fill="#fafafa" style={{ pointerEvents: 'none' }}
+                x={l.x + l.w / 2} y={l.y + l.h / 2 + 3} 
+                textAnchor="middle" fontFamily="var(--font-inter)" fontWeight="500" fontSize={l.h < 45 ? 9 : l.w < 160 ? 10 : 11} 
+                fill="#ececec" style={{ pointerEvents: 'none' }}
               >
                 {dbVenue?.name || vConst.name}
               </text>
-              <circle cx={dotX} cy={dotY} r={dotR} fill={sty.dot} style={{ pointerEvents: 'none' }}/>
+              {sty.dot !== 'transparent' && (
+                <circle cx={dotX} cy={dotY} r={dotR} fill={sty.dot} style={{ pointerEvents: 'none' }}/>
+              )}
             </g>
           )
         })}
         
         {/* Map Label */}
-        <text x="500" y="680" textAnchor="middle" fontFamily="var(--font-poppins)" fontSize="9" fill="rgba(63,63,70,0.5)" fontWeight="700" letterSpacing="3">NSS COLLEGE OF ENGINEERING, PALAKKAD</text>
+        <text x="500" y="680" textAnchor="middle" fontFamily="var(--font-inter)" fontSize="8" fill="rgba(255,255,255,0.2)" fontWeight="500" letterSpacing="2">NSS COLLEGE OF ENGINEERING, PALAKKAD</text>
       </svg>
     </div>
   )
