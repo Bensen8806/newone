@@ -19,6 +19,10 @@ const config = {
     },
     extend: {
       colors: {
+        brand: {
+          DEFAULT: '#ff2a00',
+          glow: 'rgba(255, 42, 0, 0.5)'
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
