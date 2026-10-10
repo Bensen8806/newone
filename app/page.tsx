@@ -59,40 +59,6 @@ export default async function Home() {
   }
 
   return (
-<<<<<<< Updated upstream
-    <div className="relative flex flex-col gap-16 pt-20 pb-20 min-h-screen">
-      <ScrollVideo />
-      
-      {/* Background Effect */}
-      <div className="absolute inset-0 -z-10 h-full w-full opacity-50">
-        <GradientWaves
-          horizonColor="#ff5627"
-          waveColor="#ff9fe6"
-          crestColor="#b16262"
-          speed={0.4}
-          amplitude={2.5}
-          waveScale={0.6}
-          waveRatio={0.9}
-          swell={35}
-          turbulence={20}
-          tilt={1.11}
-          zoom={1.0}
-          height={5.5}
-          fogDepth={15}
-          detail="medium"
-          brightness={1.0}
-          opacity={1.0}
-          mouseInteraction={true}
-          parallaxStrength={0.5}
-          grain={true}
-          grainIntensity={0.05}
-        />
-      </div>
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 flex flex-col items-center text-center z-10 relative">
-        <div className="mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:scale-[1.02] transition-all duration-500">
-          <Image src="/disha-transparent.png" alt="Disha Logo" width={380} height={150} quality={100} className="object-contain" priority />
-=======
     <div className="relative flex flex-col pb-24 bg-transparent overflow-x-hidden">
       {/* Global Transparent Mask spanning the whole page. No backdrop-blur because it causes lag over SVGs */}
       <div className="fixed inset-0 bg-black/70 pointer-events-none z-0" />
@@ -115,39 +81,32 @@ export default async function Home() {
             <span className="text-white"> MANAGEMENT</span>{' '}
             <span className="text-brand">PORTAL</span>
           </h2>
->>>>>>> Stashed changes
         </div>
-        <h1 className="font-poppins text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl drop-shadow-md">
-          NSSCE Event & <span className="text-primary">Venue Booking</span> System
-        </h1>
-        <div className="mt-10 flex justify-center gap-6">
-          <Link href={dashboardLink}>
-            <SpecularButton 
-              size="lg" 
-              className="font-semibold"
-              baseColor="#1f2937"
-              lineColor="#d8b4fe"
-            >
-              {user ? 'View Dashboard' : 'Login to Dashboard'}
-            </SpecularButton>
-          </Link>
-          {(!user || isAuthorizedForMap) && (
-            <Link href="/map">
-              <SpecularButton 
-                size="lg" 
-                className="font-semibold"
-                baseColor="#111827"
-                lineColor="#9ca3af"
-              >
-                <div className="flex items-center"><Map className="mr-2 h-4 w-4" /> View Campus Map</div>
-              </SpecularButton>
-            </Link>
+        <div className="flex flex-wrap justify-center gap-4">
+          <a href={dashboardLink}>
+            <button className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition hover:scale-105 duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+              Go to Dashboard
+            </button>
+          </a>
+          {roles.includes('CLUB_HEAD') && (
+            <a href="/map">
+              <button className="px-8 py-4 bg-transparent/40 border border-white/20 text-white font-bold rounded-full hover:bg-white/10 transition hover:scale-105 duration-300">
+                Campus Map
+              </button>
+            </a>
           )}
         </div>
       </section>
 
-      {/* Rolling News Bar */}
-      <EventMarquee events={events} />
+      {/* Events Marquee Section */}
+      <div style={{ height: '20vh' }} />
+      <section className="w-full z-10 overflow-hidden relative pb-10">
+        <div className="container mx-auto px-6 max-w-6xl flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-semibold text-white tracking-tight drop-shadow-md">Latest Events</h2>
+          <a href="/events" className="text-sm text-white/70 hover:text-white transition-colors">
+            View all events
+          </a>
+        </div>
 
       {/* Event Feed Section */}
       <section className="container mx-auto px-4 max-w-5xl z-10 relative">
@@ -156,26 +115,6 @@ export default async function Home() {
         </div>
         
         {events && events.length > 0 ? (
-<<<<<<< Updated upstream
-          <div className="w-full">
-            <AccordionGallery 
-              items={[...events]
-                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                .slice(0, 7)
-                .map((event: any) => ({
-                image: event.event_posts?.[0]?.poster_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
-                label: event.title,
-                subtitle: `${new Date(event.start_time).toLocaleDateString('en-GB')} • ${event.venues?.name || 'TBA'}`,
-                link: event.event_posts?.[0]?.registration_url || '#'
-              }))}
-              defaultIndex={0}
-              height={500}
-              expandRatio={0.6}
-            />
-          </div>
-        ) : (
-          <p className="text-center text-muted-foreground">No recent events to show.</p>
-=======
           <div className="flex overflow-hidden mask-edges">
             <div className="flex animate-marquee whitespace-nowrap gap-6 pl-6 py-4">
               {[...events, ...events].map((event: any, index: number) => (
@@ -269,81 +208,11 @@ export default async function Home() {
           <div className="border border-white/10 bg-white/5 rounded-2xl p-12 text-center text-white/50">
             No events found.
           </div>
->>>>>>> Stashed changes
         )}
       </section>
 
       {/* Roles Section */}
 <<<<<<< Updated upstream
-      <section className="container mx-auto px-4 max-w-7xl">
-        <div className="mb-10 max-w-3xl">
-          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-red-500 mb-3">Access Control</div>
-          <h2 className="font-poppins text-3xl font-bold tracking-tight mb-4">Role-based access</h2>
-          <p className="text-muted-foreground text-[15px] leading-relaxed max-w-xl">
-            Each user has a defined role that determines what they can see and do. A user can hold multiple roles simultaneously.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-            <CardHeader className="p-5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
-                <Image src="/role-icon.jpg" width={40} height={40} alt="Admin Role" className="object-cover" />
-              </div>
-              <CardTitle className="text-base mb-2">Admin</CardTitle>
-              <CardDescription className="text-xs leading-relaxed">
-                Manages users, roles, departments, and venue records across the entire system.
-              </CardDescription>
-            </CardHeader>
-          </BorderGlow>
-          
-          <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-            <CardHeader className="p-5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
-                <Image src="/role-icon.jpg" width={40} height={40} alt="Principal Role" className="object-cover" />
-              </div>
-              <CardTitle className="text-base mb-2">Principal</CardTitle>
-              <CardDescription className="text-xs leading-relaxed">
-                Views all events. Provides final approval or rejection with a mandatory remark.
-              </CardDescription>
-            </CardHeader>
-          </BorderGlow>
-          
-          <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-            <CardHeader className="p-5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
-                <Image src="/role-icon.jpg" width={40} height={40} alt="HOD Role" className="object-cover" />
-              </div>
-              <CardTitle className="text-base mb-2">HOD</CardTitle>
-              <CardDescription className="text-xs leading-relaxed">
-                Reviews venue requests for their department only. Approves or rejects with a mandatory remark.
-              </CardDescription>
-            </CardHeader>
-          </BorderGlow>
-          
-          <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-            <CardHeader className="p-5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
-                <Image src="/role-icon.jpg" width={40} height={40} alt="Club Head Role" className="object-cover" />
-              </div>
-              <CardTitle className="text-base mb-2">Club Head</CardTitle>
-              <CardDescription className="text-xs leading-relaxed">
-                Creates events, selects venues on the map, tracks approval status, and marks attendance.
-              </CardDescription>
-            </CardHeader>
-          </BorderGlow>
-          
-          <BorderGlow className="rounded-xl shadow-lg border bg-card/50" backgroundColor="hsl(var(--card))" glowColor="270 100 70">
-            <CardHeader className="p-5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center mb-4 overflow-hidden border border-white/10">
-                <Image src="/role-icon.jpg" width={40} height={40} alt="Student Role" className="object-cover" />
-              </div>
-              <CardTitle className="text-base mb-2">Student</CardTitle>
-              <CardDescription className="text-xs leading-relaxed">
-                Browses approved events, registers, and downloads participation certificates.
-              </CardDescription>
-            </CardHeader>
-          </BorderGlow>
-=======
       <div style={{ height: '30vh' }} />
       <section className="w-full z-10 relative pb-10">
         <div className="container mx-auto px-8 max-w-6xl">
@@ -410,7 +279,6 @@ export default async function Home() {
               </div>
             ))}
           </div>
->>>>>>> Stashed changes
         </div>
       </section>
     </div>
